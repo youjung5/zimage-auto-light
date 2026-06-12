@@ -6,7 +6,7 @@ async function post(u,b){const r=await fetch(u,{method:'POST',headers:{'Content-
 
 // ───────── 상태 ─────────
 let TAB='gen', galFilter='all', selRep=null, MODEL={name:'Z-Image-Turbo',dtype:'uint4'};
-let REPS=[], REPS_RAW=[], IMAGES=[], RES=null, CONDS=[], selectedConfig=null;
+let REPS=[], REPS_RAW=[], IMAGES=[], CONDS=[], selectedConfig=null;
 let loaded={gal:false,reps:false,cards:false,img:false};   // 첫 fetch 완료 여부 (로딩 스피너 표시용)
 let repStore={};   // 한 번 본 레플리카는 계속 보관(누적) → 자리 고정·안 사라짐
 let curImg=null, mPromptVal='', mSeedVal='', mReplicaVal='', rdReplica=null, rdRange='live';
@@ -14,7 +14,7 @@ let cond={status:'all',sort:'name'};
 let recentIds=[], recentMode=false;          // 결과 버튼: 방금 생성한 이미지 id + NEW 배지 모드
 let genWatching=false, genBaseline=new Set();// 생성 완료 감지(다량/job)용
 let rdTimer=null;                            // 레플리카 모달 자동 갱신 타이머
-let IMGTAB=[], imgGridList=[], imgCond={type:'all',sort:'new'}, imgScope='run';  // 이미지 탭 상태 (scope: run=이번 실행 / all=전체)
+let IMGTAB=[], imgCond={type:'all',sort:'new'}, imgScope='run';  // 이미지 탭 상태 (scope: run=이번 실행 / all=전체)
 
 // ───────── 탭 ─────────
 function show(v){TAB=v;
@@ -95,6 +95,21 @@ async function doGenerate(){
   const ct=+document.getElementById('count').value;
   try{
     let res;
+    // 전체 레플리카 일괄 생성(브로드캐스트): 명령만 보내고 각 노드가 비동기로 각자 ct장 생성.
+    if(document.getElementById('bcastAll').checked){
+      const seedv=document.getElementById('seed').value.trim();
+      const body = on ? {count:ct, conditions_file:selectedConfig, random_pick:true}
+                      : {count:ct, prompt:document.getElementById('prompt').value.trim(),
+                         width:+document.getElementById('w').value, height:+document.getElementById('h').value,
+                         num_inference_steps:+document.getElementById('steps').value, guidance_scale:0.0,
+                         seed:seedv===''?null:+seedv};
+      res=await post('/api/broadcast', body);
+      if(!res.ok){ formMsg('err',(res.data&&res.data.detail)||'전체 생성 요청 실패'); endGenerate(); return; }
+      formMsg('warn','전체 레플리카에 생성 명령을 보냈습니다 — 각 노드가 곧 각자 '+ct+'장 생성합니다. (진행 중인 노드는 건너뜀)');
+      endGenerate();
+      setTimeout(()=>{formMsg('','');document.getElementById('formMsg').className='form-msg';},3000);
+      poll(); return;
+    }
     if(on){ res=await post('/api/job/start',{count:ct,conditions_file:selectedConfig,random_pick:true}); }
     else{
       const seedv=document.getElementById('seed').value.trim();
@@ -202,18 +217,17 @@ async function poll(){
   try{
     if(!loaded.gal) renderGallery();    // 첫 로드 전(fetch 동안)엔 스피너 표시
     if(!loaded.reps) renderReplist();
-    // 4개 요청을 동시에 쏜다(순차 대기 X) → 한 바퀴가 '제일 느린 1개' 시간으로 끝남
+    // 3개 요청을 동시에 쏜다(순차 대기 X) → 한 바퀴가 '제일 느린 1개' 시간으로 끝남
     const imgUrl='/api/images?source='+(galFilter==='all'?'':galFilter)+(selRep?('&replica='+encodeURIComponent(selRep)):'');
-    const [s, res, imgs, reps] = await Promise.all([
+    const [s, imgs, reps] = await Promise.all([
       j('/api/status').catch(()=>null),
-      j('/api/resources').catch(()=>null),
       j(imgUrl).catch(()=>null),
       j('/api/replicas_all').catch(()=>null),
     ]);
     if(s) checkGenDone(s);
-    if(res){ RES=res; renderResources(); }
     if(imgs){ IMAGES=imgs; loaded.gal=true; renderGallery(); }
     if(reps){ mergeReps(reps.replicas); loaded.reps=true; renderReplist(); renderJob(); }
+    renderResources();   // reps 머지 후 호출 — /api/resources 폴링 제거(renderResources는 replicas_all 데이터만 사용)
   } finally { polling=false; }
 }
 // Job Status 표시: 레플리카 선택 시 그 레플리카, 선택 안 하면 전체 합계 (응답 1대 랜덤 표시 폐지)
@@ -315,13 +329,16 @@ function setHTML(el, html){ if(el && el.__html!==html){ el.innerHTML=html; el.__
 // 로딩 스피너(천천히 도는 원 + 문구). 실제 내용이 오면 reconcile/reconcileThumbs가 알아서 걷어냄.
 function loadingHTML(msg){ return '<div class="loading-box"><div class="spinner"></div><span>'+msg+'</span></div>'; }
 // 레플리카 목록: 서버는 '살아있는 것만' 준다(죽은 건 집계에서 제외됨).
-// 따라서 이번 응답에 없는 레플리카는 죽은 것 → repStore에서 제거(화면에서 사라짐).
-// 죽었던 레플리카가 다시 갱신하면 서버 응답에 다시 들어오므로 자동으로 되살아난다.
+// 이번 응답에 없는 레플리카는 바로 지우지 않고 REP_GRACE_MS 동안 마지막 값을 유지한다.
+// (서버가 status 파일을 쓰는 중이거나 2초 스냅샷 타이밍이 겹치면 한 사이클 잠깐 빠질 수 있는데,
+//  그때마다 지우면 사라졌다 나타나는 깜빡임이 생기므로 유예를 둔다.)
+// 진짜로 죽으면 서버가 계속 안 주므로 유예가 지나 자동 제거되고, 갱신 재개하면 다시 들어와 되살아난다.
+const REP_GRACE_MS=12000;   // 폴링 3초 × 약 4사이클. 일시 누락은 무시, 오래 사라진 것만 제거
 function mergeReps(list){
   if(!Array.isArray(list)) return;            // 응답이 이상하면 기존 유지(일시 깜빡임 방지)
   const t=Date.now(); const seen=new Set();
   list.forEach(r=>{ r._seen=t; repStore[r.replica]=r; seen.add(r.replica); });
-  Object.keys(repStore).forEach(k=>{ if(!seen.has(k)) delete repStore[k]; });
+  Object.keys(repStore).forEach(k=>{ if(!seen.has(k) && t-(repStore[k]._seen||0) > REP_GRACE_MS) delete repStore[k]; });
 }
 // 화면용 목록: ID순 고정 정렬. 죽음 판정은 서버가 전담(여기서 재판정하지 않음).
 // _slow(지연, 살아있음)만 서버 값을 그대로 쓴다.
@@ -427,7 +444,6 @@ setInterval(()=>{const d=['.','..','...'][Math.floor(Date.now()/450)%3];
   document.querySelectorAll('.ld-dots').forEach(e=>{e.textContent=d;});},450);
 
 // ───────── 이미지 모달 ─────────
-function openImg(i){openImgObj(IMAGES[i]);}      // 갤러리에서 (IMAGES 인덱스)
 function openImgObj(m){if(!m)return;curImg=m;
   const box=document.getElementById('mImgBox');
   box.dataset.src='/api/images/'+encodeURIComponent(m.id)+'/file'; box.dataset.fit='contain';
@@ -470,7 +486,7 @@ function viewReplica(id){closeImg();openReplicaModal(id);}
 async function loadImgTab(){
   if(!loaded.img) renderImgTab();    // 첫 로드 전(fetch 동안)엔 스피너 표시
   try{IMGTAB=await j(`/api/images?scope=${imgScope}&limit=1000`)||[];loaded.img=true;}catch(e){IMGTAB=[];}
-  bindImgSeg('iSegType','type');bindImgSeg('iSegSort','sort');
+  bindSegment('iSegType',imgCond,'type',renderImgTab);bindSegment('iSegSort',imgCond,'sort',renderImgTab);
   renderImgTab();
 }
 // 보기 범위 토글: 이번 실행(run) / 전체(all) — scope가 바뀌면 서버에서 다시 받아옴
@@ -480,9 +496,10 @@ function setImgScope(scope,btn){
   [...document.getElementById('imgScopeSeg').children].forEach(x=>x.classList.toggle('on',x.dataset.s===scope));
   loadImgTab();
 }
-function bindImgSeg(segId,key){[...document.getElementById(segId).children].forEach(b=>b.onclick=()=>{
+// 세그먼트 토글 공용 바인더: 클릭한 버튼만 on, stateObj[key]에 값 저장 후 render() 호출.
+function bindSegment(segId,stateObj,key,render){[...document.getElementById(segId).children].forEach(b=>b.onclick=()=>{
   [...document.getElementById(segId).children].forEach(x=>x.classList.remove('on'));b.classList.add('on');
-  imgCond[key]=b.dataset.v;renderImgTab();});}
+  stateObj[key]=b.dataset.v;render();});}
 function imgVal(id){return (document.getElementById(id)?.value||'').trim();}
 function imgCondBadge(){let n=0;if(imgCond.type!=='all')n++;if(imgCond.sort!=='new')n++;
   ['iqPrompt','iqSeed','iqReplica','iqConfig'].forEach(id=>{if(imgVal(id))n++;});return n;}
@@ -510,7 +527,6 @@ function renderImgTab(){
     old:(a,b)=>String(a.finished||a.created||'').localeCompare(String(b.finished||b.created||'')),
     seed:(a,b)=>(a.seed||0)-(b.seed||0)};
   list.sort(sorters[imgCond.sort]||sorters.new);
-  imgGridList=list;
   // 배지
   const n=imgCondBadge();const badge=document.getElementById('imgCondBadge');
   badge.textContent=n;badge.classList.toggle('hide',n===0);
@@ -605,9 +621,6 @@ function renderSummary(){
 function condBadgeCount(){let n=0;if(cond.status!=='all')n++;if(cond.sort!=='name')n++;
   if(document.getElementById('cOver').checked)n++;return n;}
 function toggleCond(){document.getElementById('condPop').classList.toggle('on');}
-function bindSeg(segId,key){[...document.getElementById(segId).children].forEach(b=>b.onclick=()=>{
-  [...document.getElementById(segId).children].forEach(x=>x.classList.remove('on'));b.classList.add('on');
-  cond[key]=b.dataset.v;renderCards();});}
 function renderCards(){
   if(!loaded.cards){ setHTML(document.getElementById('cards'), loadingHTML('레플리카 불러오는 중')); return; }
   const q=(document.getElementById('dq').value||'').toLowerCase();
@@ -715,10 +728,12 @@ function paintReplica(r){
   // 성능 분석 — 값 + 계산 근거 병기
   const upMin=r.uptime_s?Math.round(r.uptime_s/60*10)/10:null;     // 가동시간(분)
   const genMin=r.gen_seconds_total!=null?Math.round(r.gen_seconds_total/60*10)/10:null; // 생성에 쓴 시간(분)
+  // 시간당 생성은 이번 가동분(session_generated) 기준 — 총 생성량(generated)은 재시작 누적을 포함하므로 분리.
+  const sgen=r.session_generated!=null?r.session_generated:r.generated;
   const perf=(k,val,unit,basis)=>`<div class="pl-row"><div class="pl-k">${k}</div>
     <div class="pl-v">${val}<small>${unit}</small></div><div class="pl-basis">${basis}</div></div>`;
   setHTML(document.getElementById('rdPerf'),
-    perf('시간당 생성', f(r.throughput_hr), '장/h', (r.generated!=null&&upMin!=null)?`${r.generated}장 ÷ ${upMin}분 × 60`:'데이터 부족')+
+    perf('시간당 생성', f(r.throughput_hr), '장/h', (sgen!=null&&upMin!=null)?`${sgen}장 ÷ ${upMin}분 × 60 (이번 가동분)`:'데이터 부족')+
     perf('장당 평균', r1(r.avg_gen_s), 's', '최근 생성 표본 평균')+
     perf('가동률', f(r.busy_ratio), '%', (genMin!=null&&upMin!=null)?`생성 ${genMin}분 ÷ 가동 ${upMin}분`:'데이터 부족')+
     perf('이론 최대', f(r.throughput_max_hr), '장/h', r.avg_gen_s?`3600초 ÷ 장당 ${r1(r.avg_gen_s)}s`:'데이터 부족')+
@@ -795,7 +810,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeImg();closeRd(
 async function init(){
   try{MODEL=await j('/api/model');document.getElementById('modelBadge').textContent=MODEL.dtype;}catch(e){}
   try{const c=await j('/api/conditions');CONDS=c.files||[];}catch(e){}
-  bindSeg('segStatus','status');bindSeg('segSort','sort');
+  bindSegment('segStatus',cond,'status',renderCards);bindSegment('segSort',cond,'sort',renderCards);
   poll();setInterval(()=>{if(TAB==='gen')poll();else reloadReplicas();},3000);
 }
 init();
@@ -960,10 +975,95 @@ function cmpRenderModal(){
     </div>${runs}`;
 }
 
-function cmpShowSub(sub){document.getElementById('cmpSubCat').hidden=sub!=='cat';document.getElementById('cmpSubAna').hidden=sub!=='ana';
-  document.getElementById('cmpTcat').classList.toggle('on',sub==='cat');document.getElementById('cmpTana').classList.toggle('on',sub==='ana');
-  if(sub==='ana')cmpRenderAnalysis();}
+function cmpShowSub(sub){document.getElementById('cmpSubCat').hidden=sub!=='cat';document.getElementById('cmpSubAna').hidden=sub!=='ana';document.getElementById('cmpSubScn').hidden=sub!=='scn';
+  document.getElementById('cmpTcat').classList.toggle('on',sub==='cat');document.getElementById('cmpTana').classList.toggle('on',sub==='ana');document.getElementById('cmpTscn').classList.toggle('on',sub==='scn');
+  if(sub==='ana')cmpRenderAnalysis();
+  if(sub==='scn')uscInit();}
 function cmpRunAnalysis(){CMP_cache={ids:[...CMP_sel]};CMP_basis='actual';CMP_mode='count';CMP_condF={res:'ALL',step:'ALL',guid:'ALL'};CMP_pendRes='ALL';CMP_pendStep='ALL';CMP_pendGuid='ALL';cmpShowSub('ana');}
+
+// ===== 활용 시나리오 (usecase) — 비교 탭 서브탭. 숫자는 5.8 실측 기반 하드코딩(나중에 실통계 연동). =====
+let USC_init=false;
+function uscInit(){ if(USC_init)return; USC_init=true; concCalc(); bulkCalc(); flexCalc(); }
+function showScn(id, btn){   // 활용 시나리오 내부 탭(동시/대량/구성) 전환
+  document.querySelectorAll('#cmpSubScn .usc-body').forEach(function(e){e.style.display='none';});
+  document.getElementById('scn-'+id).style.display='';
+  document.querySelectorAll('#cmpSubScn .usc-tabs button').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+}
+// --- 동시 사용자 ---
+var concN = 5;
+function concStep(d){ concN = Math.max(1, Math.min(12, concN+d)); concCalc(); }
+function concCalc(){
+  document.getElementById('conc-n').textContent = concN+'명';
+  document.getElementById('conc-cnt').textContent = concN;
+  document.getElementById('conc-slot').innerHTML = concN+'<small>명</small>';
+  var us='';
+  for(var i=1;i<=concN;i++) us += '<div class="usc-lane"><span class="usc-who">5090('+i+')</span><div class="usc-slot usc-go" style="width:31%"></div></div>';
+  document.getElementById('conc-us').innerHTML = us;
+  var seq='<div class="usc-lane"><span class="usc-who">H100</span><div class="usc-seq">';
+  for(var j=1;j<=concN;j++) seq += '<i'+(j===1?' class="first"':'')+'>'+j+'</i>';
+  seq += '</div></div>';
+  document.getElementById('conc-them').innerHTML = seq;
+  var done=(concN*2.07).toFixed(1), wait=((concN-1)*2.07).toFixed(1);
+  document.getElementById('conc-done').innerHTML = '~'+done+'<small>초</small>';
+  document.getElementById('conc-wait').innerHTML = '최대 '+wait+'<small>초</small>';
+  document.getElementById('conc-them-axis').textContent = '순차 처리 · 마지막 사용자 약 '+done+'초';
+  document.getElementById('conc-txt-done').textContent = '전원 ~3초 내 동시 처리';
+}
+// --- 대량 생성 ---
+var bulkN = 10000;
+function bulkStep(d){ bulkN = Math.max(1000, bulkN+d); bulkCalc(); }
+function fmt(n){ return Math.round(n).toLocaleString(); }
+function bulkCalc(){
+  document.getElementById('bulk-n').textContent = bulkN.toLocaleString()+'장';
+  document.getElementById('bulk-h3').textContent = '구성별 완료 시간 ('+bulkN.toLocaleString()+'장 기준)';
+  var tH=bulkN/2595, t3=bulkN/3750, t5=bulkN/6250;
+  var cH=bulkN*1.94, c3=bulkN*1.63, c5=bulkN*1.63;
+  document.getElementById('b-h-bar').style.width='100%';  document.getElementById('b-h-bar').textContent=tH.toFixed(2)+'시간';
+  document.getElementById('b-3-bar').style.width=(t3/tH*100).toFixed(0)+'%'; document.getElementById('b-3-bar').textContent=t3.toFixed(2)+'시간';
+  document.getElementById('b-5-bar').style.width=(t5/tH*100).toFixed(0)+'%'; document.getElementById('b-5-bar').textContent=t5.toFixed(2)+'시간';
+  document.getElementById('b-h-c').innerHTML=fmt(cH)+'원 · <small>1.94원/장</small>';
+  document.getElementById('b-3-c').innerHTML=fmt(c3)+'원 · <small>1.63원/장</small>';
+  document.getElementById('b-5-c').innerHTML=fmt(c5)+'원 · <small>1.63원/장</small>';
+  document.getElementById('bulk-big').textContent = bulkN.toLocaleString()+'장 — 5090 ×5: 약 '+t5.toFixed(1)+'시간 / '+fmt(c5)+'원 (타사 H100 ×1: '+tH.toFixed(2)+'시간 / '+fmt(cH)+'원)';
+}
+// --- 구성 유연성 (목표 장수 기준 완료시간·총비용 비교) ---
+var FX = {'5090':{tp:1239, price:2040}, 'A100':{tp:1157, price:4273}};
+var FXc = {'5090':2, 'A100':0};
+var flexN = 10000;
+var H100_TP = 2595, H100_CPP = 1.94;
+function fxTime(h){ return h>=1 ? h.toFixed(2)+'<small>시간</small>' : Math.round(h*60)+'<small>분</small>'; }
+function fxTimeStr(h){ return h>=1 ? h.toFixed(2)+'시간' : Math.round(h*60)+'분'; }
+function flexNStep(d){ flexN = Math.max(1000, flexN+d); flexCalc(); }
+function flexStep(g, d){ FXc[g]=Math.max(0, FXc[g]+d); document.getElementById('c-'+g).textContent=FXc[g]; flexCalc(); }
+function flexCalc(){
+  var tp=0, cost=0, parts=[];
+  for(var g in FXc){ if(FXc[g]>0){ tp+=FXc[g]*FX[g].tp; cost+=FXc[g]*FX[g].price; parts.push(g+' ×'+FXc[g]); } }
+  var cpp = tp>0 ? cost/tp : 0;
+  document.getElementById('f-n').textContent = flexN.toLocaleString()+'장';
+  document.getElementById('f-cfg').textContent = parts.join(' + ') || '없음';
+  document.getElementById('f-tp').innerHTML = tp.toLocaleString()+'<small>장/h</small>';
+  document.getElementById('f-cost').innerHTML = cost.toLocaleString()+'<small>원/h</small>';
+  document.getElementById('f-cpp').innerHTML = (cpp? cpp.toFixed(2):'–')+'<small>원</small>';
+  // 타사 H100 — 목표 장수 기준
+  var hTime=flexN/H100_TP, hTotal=Math.round(flexN*H100_CPP);
+  document.getElementById('h-time').innerHTML = fxTime(hTime);
+  document.getElementById('h-total').innerHTML = hTotal.toLocaleString()+'<small>원</small>';
+  var big = document.getElementById('f-big');
+  if(tp===0){
+    document.getElementById('f-time').innerHTML='–'; document.getElementById('f-total').innerHTML='–';
+    big.textContent='GPU를 1대 이상 선택하세요'; return;
+  }
+  // GCUBE — 목표 장수 기준 (대수↑ → 완료 빨라짐, 총비용은 이미지당×장수)
+  var gTime=flexN/tp, gTotal=Math.round(flexN*cpp);
+  document.getElementById('f-time').innerHTML = fxTime(gTime);
+  document.getElementById('f-total').innerHTML = gTotal.toLocaleString()+'<small>원</small>';
+  var diff = Math.round((1 - cpp/H100_CPP)*100);
+  var lead = '목표 '+flexN.toLocaleString()+'장 — '+parts.join(' + ')+': '+fxTimeStr(gTime)+' / '+gTotal.toLocaleString()+'원  vs  H100: '+fxTimeStr(hTime)+' / '+hTotal.toLocaleString()+'원';
+  lead += diff>=0 ? ' → '+(gTime<hTime?'더 빠르고 ':'')+'약 '+diff+'% 저렴'
+                  : ' → H100보다 '+(-diff)+'% 비쌈 (A100 비중↑)';
+  big.textContent = lead;
+}
 function cmpUOpts(field,res,step){const set=new Set();CMP_cache.ids.forEach(id=>Object.values(cmpCondStats(CMP_GPUS.find(g=>g.id===id)).by).forEach(o=>{
   if(field==='res'){set.add(o.res);return;}
   if(field==='step'){if(res==='ALL'||o.res===res)set.add(o.step);return;}

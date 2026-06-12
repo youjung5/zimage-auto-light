@@ -6,7 +6,7 @@ pillow>=10.4.0
 uvicorn[standard]>=0.30.0
 fastapi>=0.115.0
 sdnq>=0.1.2
-# 모델을 빌드 단계에서 받기 위한 CLI (hf download) — v0.34+ 에서 hf CLI 제공
+# 모델을 빌드 단계에서 받기 위함 (Dockerfile에서 snapshot_download 로 직접 받음)
 huggingface_hub>=0.34.0
 # 리소스 모니터링 (RAM: psutil / GPU 사용률: nvidia-ml-py, 둘 다 순수 파이썬)
 psutil>=5.9.0

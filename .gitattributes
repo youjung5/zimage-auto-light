@@ -1,0 +1,4 @@
+# 셸 스크립트는 항상 LF로 — Windows에서 체크아웃해도 CRLF로 바뀌지 않게.
+# (CRLF면 컨테이너 셔뱅이 깨져 entrypoint 실행 불가)
+*.sh text eol=lf
+entrypoint.sh text eol=lf

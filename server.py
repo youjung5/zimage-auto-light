@@ -132,21 +132,20 @@ except Exception:
 # ─────────────────────────────────────────────────────────────
 # 모델 로드
 # ─────────────────────────────────────────────────────────────
-# 메모리 모드: 노드 사양에 맞춰 선택
-#   model      : enable_model_cpu_offload — 한 번에 한 컴포넌트만 VRAM. 8GB VRAM + VAE tiling 조합의 정석(기본).
-#                모델은 CPU RAM에 상주하지만 uint4라 작고, 생성 후 gc.collect로 RAM 누적을 막는다
-#   sequential : enable_sequential_cpu_offload — 레이어 단위. VRAM을 더 아끼지만 매우 느림(극저 VRAM용)
-#   none       : pipe.to("cuda") — 모델 전부 VRAM. RAM은 최소지만 VRAM을 많이 써 8GB엔 부적합(CUDA OOM 위험)
-# 8GB VRAM·16GB RAM(T3 최저)에서는 model(+VAE tiling+attention slicing+gc)이 양쪽을 모두 견디는 조합이다.
-# MEM_MODE: 모델을 어디에 올릴지. RAM(기본)=모델을 RAM에(VRAM 빠듯한 노드) / VRAM=모델을 VRAM에(RAM 빠듯한 노드)
-MEM_MODE = os.getenv("MEM_MODE", "RAM").strip().upper()
+# MEM_MODE: 모델을 어디에 올릴지. 두 가지뿐.
+#   VRAM(기본) = pipe.to("cuda")           — 모델 전부 VRAM 상주(+VAE 타일링으로 디코드 스파이크 억제 → 빠름). 8GB도 들어옴(루프 6.55GB).
+#   RAM        = enable_model_cpu_offload() — 컴포넌트씩만 VRAM(나머지는 RAM). 아주 빠듯한 노드용 폴백, 느림.
+# ※ 기본을 VRAM으로 둔다(2026-06-11). 디노이징 루프는 8GB에 들어오고(실측 6.55GB), 넘치는 건 1회성 VAE 디코드뿐 → 타일링으로 대응. 아주 빠듯하면 MEM_MODE=RAM으로 폴백.
+MEM_MODE = os.getenv("MEM_MODE", "VRAM").strip().upper()
 if MEM_MODE not in ("VRAM", "RAM"):
-    print(f"[ WARN ] MEM_MODE='{MEM_MODE}' 알 수 없음 → RAM 으로 동작", flush=True)
-    MEM_MODE = "RAM"
+    print(f"[ WARN ] MEM_MODE='{MEM_MODE}' 알 수 없음 → VRAM 으로 동작", flush=True)
+    MEM_MODE = "VRAM"
 print(f"[ MODEL ] loading {MODEL_REPO} ... (MEM_MODE={MEM_MODE})", flush=True)
 # low_cpu_mem_usage: 로딩 시 RAM 피크를 낮춘다(가중치를 한꺼번에 RAM에 펼치지 않음)
 pipe = ZImagePipeline.from_pretrained(MODEL_REPO, torch_dtype=torch.bfloat16, low_cpu_mem_usage=True)
-# 추론 중 메모리 절감(모드와 무관, 지원 안 하면 조용히 건너뜀)
+# 추론 중 메모리 절감(모드와 무관, 지원 안 하면 조용히 건너뜀).
+# ※ 2026-06-09 벤치: 5060Ti(16GB)에서 이걸 끄니 장당 21s→116s(약 5배 느림).
+#   약한 카드엔 이 옵션들이 속도에도 도움 → 항상 켠다. ('VRAM 모드=끄기'는 회귀라 되돌림.)
 for _opt in ("enable_vae_slicing", "enable_vae_tiling", "enable_attention_slicing"):
     try:
         getattr(pipe, _opt)()
@@ -154,9 +153,9 @@ for _opt in ("enable_vae_slicing", "enable_vae_tiling", "enable_attention_slicin
         pass
 # 모델을 어디에 올릴지
 if MEM_MODE == "VRAM":
-    pipe.to("cuda")                          # 모델을 VRAM에(생성 중 RAM 거의 안 씀) — VRAM 여유 노드(예: 12GB)
+    pipe.to("cuda")                          # 모델을 VRAM에(생성 중 RAM 거의 안 씀) — VRAM 여유 노드
 else:  # RAM (기본)
-    pipe.enable_model_cpu_offload()          # 모델을 RAM에(컴포넌트씩만 VRAM) — VRAM 빠듯 노드(예: 8GB)
+    pipe.enable_model_cpu_offload()          # 모델을 RAM에(컴포넌트씩만 VRAM) — VRAM 빠듯 노드
 print("[ MODEL ] ready", flush=True)
 
 # ─────────────────────────────────────────────────────────────
@@ -165,9 +164,19 @@ print("[ MODEL ] ready", flush=True)
 gpu_lock = threading.Lock()
 _seq = 0
 _seq_lock = threading.Lock()
-MY_GENERATED = 0      # 이 레플리카가 만든 장 수
+def _count_my_images_on_disk():
+    # 부팅 시 이 레플리카가 이번 RUN_ID 폴더에 이미 만들어 둔 이미지 수(디스크 기준).
+    # 파드 재시작으로 카운터가 0이 되어 '생성량'이 실제보다 적게 보이는 것을 막는다.
+    # 파일명 stem = {REPLICA_ID}_{ts}_{seq}_seed{seed} → prefix로 이 레플리카 것만 센다(파싱 없이).
+    try:
+        return sum(1 for _ in CURRENT_DIR.glob(f"{REPLICA_ID}_*.json"))
+    except Exception:
+        return 0
+
+BASE_GENERATED = _count_my_images_on_disk()   # 재시작 전(이전 프로세스들)이 만든 누적 장수
+MY_GENERATED = 0      # 이 프로세스(세션)가 만든 장 수 — throughput(시간당 생성) 계산 기준
 TOTAL_GEN_SECONDS = 0.0  # 누적 생성 시간(초) — 가동률 계산용
-LAST_GEN = {"seconds": None, "peak_vram_mb": None, "device_used_mb": None}
+LAST_GEN = {"seconds": None, "peak_vram_mb": None}
 GEN_TIMES = deque(maxlen=STAT_KEEP)   # 생성 소요시간(초) 표본
 VRAM_PEAKS = deque(maxlen=STAT_KEEP)  # 생성 VRAM peak(GB) 표본
 
@@ -238,10 +247,9 @@ def _run_generation(prompt, width, height, steps, guidance, seed, source, config
         peak_gb = round(torch.cuda.max_memory_allocated() / 1024**3, 2)
         LAST_GEN["seconds"] = elapsed
         LAST_GEN["peak_vram_mb"] = round(peak_gb * 1024, 1)
-        free_b, total_b = torch.cuda.mem_get_info()
-        LAST_GEN["device_used_mb"] = round((total_b - free_b) / 1024**2, 1)
         torch.cuda.empty_cache()   # 생성 후 GPU 캐시 반환
-    gc.collect()                   # 생성 후 시스템 RAM 회수 — offload 시 누적되는 RAM 방지
+    if MEM_MODE == "RAM":          # offload(RAM 모드)에서만 의미 — VRAM 모드는 불필요한 stall만 늘어 생략
+        gc.collect()               # 생성 후 시스템 RAM 회수(offload 누적 방지)
     GEN_TIMES.append(elapsed)
     TOTAL_GEN_SECONDS += elapsed
     if peak_gb is not None:
@@ -420,7 +428,8 @@ def _status_payload():
         "ram_used_gb": snap["ram_used_gb"],
         "ram_total_gb": snap["ram_total_gb"],
         "util": snap["util"],
-        "generated": MY_GENERATED,
+        "generated": BASE_GENERATED + MY_GENERATED,   # 총 생성량(재시작 전 누적 포함) — 대시보드 표시·합산용
+        "session_generated": MY_GENERATED,            # 이번 가동분 — 시간당 생성(throughput) 계산 근거
         "last_gen_s": LAST_GEN["seconds"],
         "avg_gen_s": avg_s,                  # 평균 생성 시간
         "min_gen_s": min_s,                  # 최단
@@ -463,28 +472,48 @@ def _heartbeat_loop():
 #   - 노하드(디스크리스) 대비: 별도 폴링 스레드를 두지 않고 heartbeat 사이클에 묶어 네트워크
 #     왕복을 최소화. 생성 중에도 heartbeat 스레드가 계속 돌아 pause/cancel 이 반영된다.
 # ─────────────────────────────────────────────────────────────
-_last_control_ts = None
+_last_cmd_ts = {"target": None, "broadcast": None}   # 명령 종류별 마지막 적용 ts(중복 실행 방지)
+
+def _apply_command(d):
+    """명령 1건 적용. pause/resume/cancel + generate(이 레플리카가 count장 생성)."""
+    act = d.get("action")
+    if act == "pause":  job.pause()
+    elif act == "resume": job.resume()
+    elif act == "cancel": job.cancel()
+    elif act == "generate":
+        cf = d.get("config_file")
+        try:
+            conds = _load_conditions_file(cf) if cf else d.get("conditions")
+            if conds:
+                # UI 일괄 생성 = manual. 진행 중(running/paused)이면 job.start가 409 → 아래서 건너뜀.
+                job.start(conds, int(d.get("count", 1)), bool(d.get("random_pick", False)),
+                          config_file=cf, source="manual")
+        except HTTPException as e:
+            print(f"[ CTRL ] generate 건너뜀(진행 중이거나 입력 오류): {e.detail}", flush=True)
+        except Exception as e:
+            print(f"[ CTRL ] generate 실패: {e}", flush=True)
+
+def _maybe_apply(cf, key):
+    """cf 파일에 새 명령(ts)이 있으면 1건 적용. 재시작 시 잔존 명령은 무시(ts ≥ STARTED_AT)."""
+    if not cf.exists():
+        return
+    d = json.loads(cf.read_text(encoding="utf-8"))
+    ts = d.get("ts")
+    if not ts or ts == _last_cmd_ts.get(key):
+        return
+    _last_cmd_ts[key] = ts
+    try:
+        cmd_dt = dt.datetime.fromisoformat(ts)
+    except Exception:
+        cmd_dt = None
+    if cmd_dt is None or cmd_dt >= STARTED_AT:
+        _apply_command(d)
 
 def _check_control():
-    """control/<파드>.json 에 새 명령이 있으면 1건 적용."""
-    global _last_control_ts
-    cf = CONTROL_DIR / f"{REPLICA_ID}.json"
+    """타겟(control/<파드>.json) + 브로드캐스트(control/_broadcast.json) 명령을 확인해 적용."""
     try:
-        if cf.exists():
-            d = json.loads(cf.read_text(encoding="utf-8"))
-            ts = d.get("ts")
-            if ts and ts != _last_control_ts:
-                _last_control_ts = ts
-                try:
-                    cmd_dt = dt.datetime.fromisoformat(ts)
-                except Exception:
-                    cmd_dt = None
-                # 시작 이후에 쓰인 명령만 실행(재시작 시 잔존 명령 무시)
-                if cmd_dt is None or cmd_dt >= STARTED_AT:
-                    act = d.get("action")
-                    if act == "pause":  job.pause()
-                    elif act == "resume": job.resume()
-                    elif act == "cancel": job.cancel()
+        _maybe_apply(CONTROL_DIR / f"{REPLICA_ID}.json", "target")     # 선택 제어(pause/resume/cancel)
+        _maybe_apply(CONTROL_DIR / "_broadcast.json", "broadcast")     # 전체 일괄 생성(각자 count장)
     except Exception as e:
         print(f"[ WARN ] control 확인 실패: {e}", flush=True)
 
@@ -700,20 +729,37 @@ def control(targets: list = Body(...), action: str = Body(...)):
     return {"action": action, "ts": ts, "written": written}
 
 
-@app.get("/api/resources")
-def resources():
-    """이 레플리카(응답한 레플리카)의 현재 자원 + 생성 통계."""
-    snap = _gpu_snapshot()
-    avg_s, min_s, max_s = _stat(GEN_TIMES)
-    vram_avg, _vmin, vram_peak = _stat(VRAM_PEAKS)
-    return {
-        "replica": REPLICA_ID,
-        "gpu": snap,
-        "last_gen": LAST_GEN,
-        "gen_avg_s": avg_s, "gen_min_s": min_s, "gen_max_s": max_s,
-        "vram_avg_gb": vram_avg, "vram_peak_gb": vram_peak,
-        "generated": MY_GENERATED,
-    }
+@app.post("/api/broadcast")
+def broadcast(
+    count: int = Body(1),
+    prompt: str = Body(None),
+    width: int = Body(DEFAULT_WIDTH),
+    height: int = Body(DEFAULT_HEIGHT),
+    num_inference_steps: int = Body(DEFAULT_STEPS),
+    guidance_scale: float = Body(DEFAULT_GUIDANCE),
+    seed: int = Body(None),
+    conditions_file: str = Body(None),
+    random_pick: bool = Body(False),
+):
+    """전체 레플리카 일괄 생성: control/_broadcast.json 에 generate 명령을 기록한다.
+    모든 레플리카가 자기 사이클(_check_control)에 읽어 '각자 count장'씩 생성한다(진행 중이면 건너뜀).
+    임의 파드가 받아도 됨(공유 저장소). 생성 조건은 생성 폼과 동일(프롬프트/파라미터 또는 conditions_file)."""
+    if not count or int(count) < 1:
+        raise HTTPException(400, "count 는 1 이상이어야 합니다.")
+    ts = dt.datetime.now().isoformat()   # microsecond 포함 → 연속 명령 구분
+    cmd = {"action": "generate", "ts": ts, "count": int(count),
+           "random_pick": bool(random_pick), "config_file": conditions_file}
+    if not conditions_file:
+        cmd["conditions"] = [{"prompt": prompt or "", "width": width, "height": height,
+                              "steps": num_inference_steps, "guidance": guidance_scale, "seed": seed}]
+    try:
+        (CONTROL_DIR / "_broadcast.json").write_text(
+            json.dumps(cmd, ensure_ascii=False), encoding="utf-8")
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+    return {"ok": True, "ts": ts, "count": int(count), "scope": "all"}
+
+
 
 
 @app.get("/api/conditions")

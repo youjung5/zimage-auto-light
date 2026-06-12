@@ -26,3 +26,10 @@ hf-cache/
 
 # 윈도우 다운로드 메타데이터
 *:Zone.Identifier
+
+# 임시 디자인/측정 산출물 (PROJECT_CONTEXT "0." 참고 — repo 제외)
+_preview_usecase.html
+_usecase_full_mockup.html
+gpu_profiles.json
+bench_*.json
+diag_*.txt

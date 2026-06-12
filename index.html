@@ -87,6 +87,7 @@
             <div><label>Count</label><input type="number" id="count" value="1"></div>
           </div>
           <div class="count-hint"><b style="color:var(--text-muted)">CONFIG 토글</b> &nbsp;<b style="color:var(--purple)">ON</b> → 파일 프롬프트로 랜덤 생성 (프롬프트 비활성) &nbsp;|&nbsp; <b style="color:var(--purple)">OFF</b> → 위 프롬프트 사용</div>
+          <label class="chk" style="margin:0 0 10px"><input type="checkbox" id="bcastAll"><span class="switch"></span> 전체 레플리카에 각자 Count장 생성 <span class="def">배포된 모든 노드</span></label>
           <div class="gen-split">
             <button class="btn-main" id="genBtn" onclick="doGenerate()">생성</button>
             <button class="btn-result" id="resultBtn" onclick="showResult()" disabled>결과</button>
@@ -189,8 +190,9 @@
 <div class="view" id="vCompare" hidden>
   <div class="cmp-wrap">
     <div class="cmp-subtabs">
-      <button id="cmpTcat" class="on" onclick="cmpShowSub('cat')">카탈로그</button>
+      <button id="cmpTcat" class="on" onclick="cmpShowSub('cat')">GPU 목록</button>
       <button id="cmpTana" onclick="cmpShowSub('ana')">비교 분석</button>
+      <button id="cmpTscn" onclick="cmpShowSub('scn')">활용 시나리오</button>
     </div>
     <section id="cmpSubCat">
       <div class="cmp-catbar">
@@ -207,6 +209,106 @@
       <div id="cmpCatalog"></div>
     </section>
     <section id="cmpSubAna" hidden><div id="cmpAna"></div></section>
+    <section id="cmpSubScn" hidden>
+      <div class="usc-cap">동일 워크로드(1024×1024 이미지 생성) 기준 · GCUBE vs 타사 클라우드(H100) · 측정 2026년 6월 · 환율 1,525원/$ · <span style="color:var(--purple)">+/− 로 직접 조절</span></div>
+      <div class="usc-tabs">
+        <button class="on" onclick="showScn('conc',this)">동시 사용자</button>
+        <button onclick="showScn('bulk',this)">대량 생성</button>
+        <button onclick="showScn('flex',this)">구성 유연성</button>
+      </div>
+
+      <!-- ===== 동시 사용자 ===== -->
+      <div class="usc-body" id="scn-conc">
+        <div class="usc-ctrl"><span class="usc-lab">시나리오</span><span style="font-size:12px;color:var(--text-2)">동시 접속 사용자</span>
+          <div class="usc-step"><button onclick="concStep(-1)">−</button><span class="usc-v" id="conc-n">5명</span><button onclick="concStep(1)">+</button></div>
+          <span style="color:var(--text-dim);font-size:11px;">· 사용자별 이미지 1장 요청</span></div>
+        <div class="usc-cols">
+          <div class="usc-cfg usc-us"><span class="usc-badge usc-us">GCUBE</span><h3>RTX 5090 × <span id="conc-cnt">5</span></h3><div class="usc-desc">사용자별 전용 GPU로 동시 처리</div>
+            <div class="usc-lanes" id="conc-us"></div>
+            <div class="usc-axis">전체 사용자 약 3.1초 내 완료</div>
+            <div class="usc-stats">
+              <div class="usc-stat usc-good"><div class="usc-k">동시 처리</div><div class="usc-v" id="conc-slot">5<small>명</small></div></div>
+              <div class="usc-stat usc-good"><div class="usc-k">전체 완료</div><div class="usc-v">~3.1<small>초</small></div></div>
+              <div class="usc-stat usc-good"><div class="usc-k">평균 대기</div><div class="usc-v">~0<small>초</small></div></div>
+              <div class="usc-stat usc-good"><div class="usc-k">이미지당 비용</div><div class="usc-v">1.75<small>원</small></div></div></div></div>
+          <div class="usc-cfg usc-them"><span class="usc-badge usc-them">타사 (H100)</span><h3>H100 × 1</h3><div class="usc-desc">단일 GPU로 순차 처리</div>
+            <div class="usc-lanes" id="conc-them"></div>
+            <div class="usc-axis" id="conc-them-axis">순차 처리 · 마지막 사용자 약 10.4초</div>
+            <div class="usc-stats">
+              <div class="usc-stat usc-bad"><div class="usc-k">동시 처리</div><div class="usc-v">1<small>명</small></div></div>
+              <div class="usc-stat usc-bad"><div class="usc-k">전체 완료</div><div class="usc-v" id="conc-done">~10.4<small>초</small></div></div>
+              <div class="usc-stat usc-bad"><div class="usc-k">평균 대기</div><div class="usc-v" id="conc-wait">최대 8.3<small>초</small></div></div>
+              <div class="usc-stat usc-bad"><div class="usc-k">이미지당 비용</div><div class="usc-v">2.90<small>원</small></div></div></div></div>
+        </div>
+        <div class="usc-verdict"><div class="usc-big">동시 처리 — GCUBE 약 40% 더 경제적</div>
+          <div class="usc-txt">GCUBE는 사용자별 전용 GPU로 <b id="conc-txt-done">전원 ~3초 내 동시 처리</b>(대기 없음), 이미지당 비용도 <b>1.75원</b>으로 타사 H100(2.90원) 대비 우수합니다. 동시 접속이 많을수록 대기·비용 격차가 커집니다.</div>
+          <div class="usc-honest">※ 단일 이미지 응답 속도는 H100이 더 빠름(2.07초 vs 3.09초). 동시·다수에서 GCUBE 우위.</div></div>
+      </div>
+
+      <!-- ===== 대량 생성 ===== -->
+      <div class="usc-body" id="scn-bulk" style="display:none">
+        <div class="usc-ctrl"><span class="usc-lab">시나리오</span><span style="font-size:12px;color:var(--text-2)">대량 배치 생성 — 목표 장수</span>
+          <div class="usc-step"><button onclick="bulkStep(-1000)">−</button><span class="usc-v" id="bulk-n">10,000장</span><button onclick="bulkStep(1000)">+</button></div>
+          <span style="color:var(--text-dim);font-size:11px;">· 최대 처리량 기준</span></div>
+        <div class="usc-cfg" style="border-top-color:var(--line)"><h3 id="bulk-h3">구성별 완료 시간 (10,000장 기준)</h3>
+          <div class="usc-brow"><div class="usc-nm">H100 ×1<em>타사</em></div><div class="usc-tbar usc-them" id="b-h-bar" style="width:100%">3.85시간</div><div class="usc-num" id="b-h-c">19,400원 · <small>1.94원/장</small></div></div>
+          <div class="usc-brow"><div class="usc-nm">5090 ×3<em>GCUBE</em></div><div class="usc-tbar usc-us" id="b-3-bar" style="width:69%">2.67시간</div><div class="usc-num" id="b-3-c">16,300원 · <small>1.63원/장</small></div></div>
+          <div class="usc-brow"><div class="usc-nm">5090 ×5<em>GCUBE</em></div><div class="usc-tbar usc-us" id="b-5-bar" style="width:42%">1.60시간</div><div class="usc-num" id="b-5-c">16,300원 · <small>1.63원/장</small></div></div>
+          <div style="font-size:10.5px;color:var(--text-dim);margin-top:4px">막대: 완료 시간(짧을수록 우수) · 우측: 총비용 · 이미지당 비용</div>
+        </div>
+        <div class="usc-verdict"><div class="usc-big" id="bulk-big">10,000장 — 5090 ×5: 약 1.6시간 / 16,300원 (타사 H100 ×1: 3.85시간 / 19,400원)</div>
+          <div class="usc-txt">더 빠르면서 약 <b>16% 저렴</b>합니다. 총비용은 GPU 대수와 무관하게 거의 동일하며(이미지당 비용 × 장수), <b>GPU 대수로 완료 시간을 조절</b>할 수 있습니다.</div>
+          <div class="usc-honest">※ 최대 처리량 기준 · 5090 이미지당 1.63원은 클린 측정(320장) 기반 · A100·혼합은 추가 측정 예정.</div></div>
+      </div>
+
+      <!-- ===== 구성 유연성 ===== -->
+      <div class="usc-body" id="scn-flex" style="display:none">
+        <div class="usc-ctrl"><span class="usc-lab">구성</span><span style="font-size:12px;color:var(--text-2)">원하는 GPU를 직접 조합 — +/− 로 대수</span><span style="margin-left:auto;font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em">목표 장수</span><div class="usc-step"><button onclick="flexNStep(-1000)">−</button><span class="usc-v" id="f-n">10,000장</span><button onclick="flexNStep(1000)">+</button></div></div>
+        <div class="usc-cols">
+          <div class="usc-cfg usc-us"><span class="usc-badge usc-us">GCUBE — 직접 구성</span><h3>GPU 조합 선택</h3>
+            <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:13px">
+              <div style="display:flex;align-items:center;gap:10px"><div style="flex:1"><div style="font-size:13px;color:#fff">RTX 5090</div><div style="font-size:10px;color:var(--text-dim)">1,239장/h · 2,040원/h · 1.63원/장</div></div>
+                <div class="usc-step"><button onclick="flexStep('5090',-1)">−</button><span class="usc-v" id="c-5090">2</span><button onclick="flexStep('5090',1)">+</button></div></div>
+              <div style="display:flex;align-items:center;gap:10px"><div style="flex:1"><div style="font-size:13px;color:#fff">A100 40GB</div><div style="font-size:10px;color:var(--text-dim)">1,157장/h · 4,273원/h · 3.69원/장 (측정 추정)</div></div>
+                <div class="usc-step"><button onclick="flexStep('A100',-1)">−</button><span class="usc-v" id="c-A100">0</span><button onclick="flexStep('A100',1)">+</button></div></div>
+              <div style="display:flex;align-items:center;gap:10px;opacity:.4"><div style="flex:1"><div style="font-size:13px;color:#fff">RTX 5060Ti 16GB</div><div style="font-size:10px;color:var(--text-dim)">측정 예정</div></div>
+                <div class="usc-step"><button>−</button><span class="usc-v">0</span><button>+</button></div></div>
+            </div>
+            <div class="usc-stats">
+              <div class="usc-stat"><div class="usc-k">선택 구성</div><div class="usc-v" id="f-cfg" style="font-size:13px">5090 ×2</div></div>
+              <div class="usc-stat"><div class="usc-k">총 처리량</div><div class="usc-v" id="f-tp">2,478<small>장/h</small></div></div>
+              <div class="usc-stat usc-good"><div class="usc-k">목표 완료</div><div class="usc-v" id="f-time">4.04<small>시간</small></div></div>
+              <div class="usc-stat usc-good"><div class="usc-k">목표 총비용</div><div class="usc-v" id="f-total">16,480<small>원</small></div></div>
+              <div class="usc-stat usc-good"><div class="usc-k">이미지당</div><div class="usc-v" id="f-cpp">1.65<small>원</small></div></div>
+              <div class="usc-stat"><div class="usc-k">총 시간당</div><div class="usc-v" id="f-cost">4,080<small>원/h</small></div></div></div></div>
+          <div class="usc-cfg usc-them"><span class="usc-badge usc-them">타사 (H100)</span><h3>H100 단독 (조합 불가)</h3>
+            <div class="usc-menu" style="margin-top:6px">고가 H100만 · 1대 단위로만 증설 · 다른 GPU 선택 불가</div>
+            <div class="usc-stats">
+              <div class="usc-stat"><div class="usc-k">구성</div><div class="usc-v">H100 ×1</div></div>
+              <div class="usc-stat"><div class="usc-k">처리량</div><div class="usc-v">2,595<small>장/h</small></div></div>
+              <div class="usc-stat usc-bad"><div class="usc-k">목표 완료</div><div class="usc-v" id="h-time">3.85<small>시간</small></div></div>
+              <div class="usc-stat usc-bad"><div class="usc-k">목표 총비용</div><div class="usc-v" id="h-total">19,400<small>원</small></div></div>
+              <div class="usc-stat usc-bad"><div class="usc-k">이미지당</div><div class="usc-v">1.94<small>원</small></div></div>
+              <div class="usc-stat"><div class="usc-k">시간당</div><div class="usc-v">5,033<small>원/h</small></div></div></div></div>
+        </div>
+
+        <!-- 왜 구성 유연성이 이득인가 -->
+        <div class="usc-cfg usc-us" style="margin-top:16px;">
+          <span class="usc-badge usc-us">왜 이득인가</span>
+          <h3>"비싼 메인 + 싼 백업" — 단일 임대로는 안 되는 그림</h3>
+          <div class="usc-desc">타사는 비싼 GPU 한 덩어리를 통째로 빌립니다 — 전부거나 전무. GCUBE는 여러 등급 카드를 자유롭게 조합해 <b style="color:var(--purple)">메인 1대 + 싼 백업 N대</b>로, 같은 목적을 더 싼 구성으로 달성합니다.</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+            <div class="usc-stat"><div class="usc-k">① idle 낭비 제거</div><div style="font-size:11.5px;color:var(--text-2);line-height:1.6;margin-top:5px;">평소엔 메인만, 피크에만 싼 백업을 띄웠다 끕니다. H100 1대를 피크 기준 24h 빌리면 한가한 시간도 풀요금 — 빈 좌석에 돈 내는 셈.</div></div>
+            <div class="usc-stat"><div class="usc-k">② 싸게 이중화</div><div style="font-size:11.5px;color:var(--text-2);line-height:1.6;margin-top:5px;">메인이 죽어도 싼 백업이 서비스를 살립니다(느려도 안 멈춤). 단일 H100은 장애 = 전면 중단, 안 멈추려면 H100 2대(2배 비용).</div></div>
+            <div class="usc-stat"><div class="usc-k">③ 작업별 최적 배정</div><div style="font-size:11.5px;color:var(--text-2);line-height:1.6;margin-top:5px;">빠른 응답엔 빠른 카드, 대량 배치엔 처리량 카드. 단일 GPU 임대는 한 종류에 묶여 선택지가 없습니다.</div></div>
+          </div>
+        </div>
+
+        <div class="usc-verdict"><div class="usc-big" id="f-big">선택한 GCUBE 구성이 H100보다 이미지당 약 15% 저렴</div>
+          <div class="usc-txt">대수를 늘릴수록 <b>완료 시간이 짧아지고</b>, 목표 장수를 채우는 <b>총비용은 늘 H100보다 저렴</b>합니다(이미지당이 싸서). 시간당 금액은 대수만큼 커 보여도, 실제 '할 일(목표 장수)' 기준으론 GCUBE가 유리합니다.</div>
+          <div class="usc-honest">※ 5090 1.63원은 클린 측정 · A100는 측정 추정(넣으면 비용↑) · 5060Ti 측정 예정.</div></div>
+      </div>
+    </section>
   </div>
 </div>
 <div class="cmp-overlay" id="cmpOverlay" onclick="if(event.target===this)cmpCloseModal()"><div class="cmp-modal" id="cmpModal"></div></div>
@@ -620,7 +722,7 @@
         <div class="d-tag">Compare</div><h1 class="d-h1">비교 탭 · GPU 가격·성능 비교</h1>
         <p class="d-lead">레플리카가 아니라 <b>GPU 종류 단위</b>로 성능과 비용(특히 <b>원/장</b>)을 비교합니다. 자사(GCUBE) GPU끼리, 그리고 경쟁사 플랫폼과 비교할 수 있습니다.</p>
         <div class="d-note">
-          <div class="d-n"><div class="t"><span class="d-dot" style="background:#B47AFF"></span>카탈로그 → 비교 분석</div><div class="x">카탈로그에서 <b>비교 모드</b>를 켜고 GPU를 2~4개 고른 뒤 <b>분석</b>을 누르면 비교 분석 화면으로 넘어갑니다. 카드를 누르면(체크박스 외 영역) 상세 모달이 열립니다.</div></div>
+          <div class="d-n"><div class="t"><span class="d-dot" style="background:#B47AFF"></span>GPU 목록 → 비교 분석 → 활용 시나리오</div><div class="x"><b>GPU 목록</b>에서 <b>비교 모드</b>를 켜고 GPU를 2~4개 고른 뒤 <b>분석</b>을 누르면 비교 분석 화면으로 넘어갑니다. 카드를 누르면(체크박스 외 영역) 상세 모달이 열립니다. <b>활용 시나리오</b> 탭에서는 동시 사용자·대량 생성·구성 유연성 시나리오별 비용·성능을 +/−로 비교할 수 있습니다.</div></div>
           <div class="d-n"><div class="t"><span class="d-dot" style="background:#8cffb0"></span>실측 / 예측</div><div class="x"><b>실측</b>은 지금까지 측정된 그대로, <b>예측</b>은 "N장/N시간 돌린다고 가정하면" 비용을 계산합니다. 조건(해상도·step·guidance)을 골라 같은 조건끼리 비교할 수 있습니다.</div></div>
           <div class="d-n"><div class="t"><span class="d-dot" style="background:#9fb4ff"></span>비용은 대여 시간 기준</div><div class="x">플랫폼은 사용 시간(시간당/분당, 올림)으로 과금합니다. 총비용 = 시간당단가 × 과금시간 + 기본금 + 스토리지. 통화는 원화로 표시합니다.</div></div>
         </div>
@@ -793,6 +895,26 @@
         <button data-r="all" onclick="setRange('all',this)">전체</button>
       </div>
       <div class="ts-chart" id="tsChart"></div>
+    </div>
+    <div class="rd-section">
+      <h3>
+        동일 스펙 타 서비스 시간당 단가
+      </h3>
+      <div class="cmp">
+        <div class="hero">
+          <div class="pre">타 서비스 대비 최대</div>
+          <div class="pct">−42%</div>
+          <div class="desc">시간당 단가 절감</div>
+          <div class="spec">동일 스펙 · 1× RTX 5090</div>
+        </div>
+        <div class="chart">
+          <div class="crow me"><span class="svc">gcube</span><span class="cbar me" style="width:58%"></span><span class="price">₩910</span><span class="tag low">최저</span></div>
+          <div class="crow"><span class="svc">Novita</span><span class="cbar other" style="width:69%"></span><span class="price">₩1,080</span><span class="tag up">+19%</span></div>
+          <div class="crow"><span class="svc">RunPod</span><span class="cbar other" style="width:94%"></span><span class="price">₩1,485</span><span class="tag up">+63%</span></div>
+          <div class="crow"><span class="svc">Vast.ai</span><span class="cbar other" style="width:100%"></span><span class="price">₩1,575</span><span class="tag up">+73%</span></div>
+        </div>
+        <div class="note">● ₩/시간 · +%는 gcube 대비 추가 비용</div>
+      </div>
     </div>
     <div class="rd-section">
       <h3>이 레플리카 이미지 <button class="more-btn" id="rdMore">더보기 ›</button></h3>

@@ -24,8 +24,11 @@ ENV DEBIAN_FRONTEND=noninteractive \
     ZIMG_GUIDANCE=0.0
 
 # ── 시스템 패키지 (설치 + 정리 한 레이어) ──
+#   build-essential + python3-dev: Triton JIT가 커널 런처를 컴파일할 때 C 컴파일러(+Python.h)가 필요.
+#   없으면 SDNQ가 "Failed to find C compiler" → PyTorch eager 모드로 폴백(uint4 최적커널 미사용 → 느림).
+#   (2026-06-11: 5060/5090/A100 측정이 전부 eager였던 원인. 정확한 속도엔 이게 있어야 함.)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 python3-pip git ca-certificates \
+    python3 python3-pip python3-dev git ca-certificates build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -51,8 +54,10 @@ RUN python3 -m pip install --no-cache-dir -r /app/requirements.txt && \
     rm -rf /root/.cache /tmp/*
 
 # ── ③ 모델을 빌드 단계에서 굽기 (Tier3 런타임 다운로드 불가 대응) ──
+#   콘솔 스크립트('hf'/'huggingface-cli')는 huggingface_hub 버전에 따라 PATH에 없을 수 있어
+#   파이썬 snapshot_download 로 직접 받는다(버전·PATH 영향 없음). 캐시는 HF_HUB_CACHE 로.
 RUN mkdir -p ${HF_HUB_CACHE} ${OUTPUT_DIR}/auto ${OUTPUT_DIR}/manual && \
-    hf download ${MODEL_REPO} && \
+    python3 -c "import os; from huggingface_hub import snapshot_download; snapshot_download(os.environ['MODEL_REPO'])" && \
     rm -rf /root/.cache /tmp/*
 
 # ── 런타임은 캐시에서 오프라인 로드 ──
@@ -61,6 +66,8 @@ ENV HF_HUB_OFFLINE=1 \
 
 # ── 애플리케이션 파일 ──
 COPY server.py /app/server.py
+COPY benchmark.py /app/benchmark.py
+COPY diag_vram.py /app/diag_vram.py
 COPY index.html /app/index.html
 COPY static/ /app/static/
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
