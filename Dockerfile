@@ -38,7 +38,7 @@ WORKDIR /app
 #   (기존엔 CPU torch 설치 후 재설치 → 두 벌이 이미지에 박혀 6.5GB 낭비)
 #   torchaudio는 이미지 생성에 불필요 → 제외 (torch + torchvision 만)
 RUN python3 -m pip install --no-cache-dir --upgrade pip setuptools wheel && \
-    python3 -m pip install --no-cache-dir torch torchvision \
+    python3 -m pip install --no-cache-dir torch==2.11.0 torchvision==0.26.0 \
       --index-url https://download.pytorch.org/whl/cu128 && \
     (python3 -m pip uninstall -y pytorch-triton triton nvidia-nccl-cu12 || true)
 # ↑ 미사용 패키지 제거 (같은 레이어여야 실제 용량 감소):
