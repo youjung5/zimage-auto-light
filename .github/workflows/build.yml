@@ -17,8 +17,6 @@ jobs:
         include:
           - dtype: uint4
             model_repo: Disty0/Z-Image-Turbo-SDNQ-uint4-svd-r32
-          - dtype: int8
-            model_repo: Disty0/Z-Image-Turbo-SDNQ-int8
 
     steps:
       - name: Checkout
