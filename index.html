@@ -210,7 +210,7 @@
     </section>
     <section id="cmpSubAna" hidden><div id="cmpAna"></div></section>
     <section id="cmpSubScn" hidden>
-      <div class="usc-cap">동일 워크로드(1024×1024 이미지 생성) 기준 · GCUBE vs 타사 클라우드(H100) · 측정 2026년 6월 · 환율 1,525원/$ · <span style="color:var(--purple)">+/− 로 직접 조절</span></div>
+      <div class="usc-cap">동일 워크로드(1024×1024·8step·batch1) 기준 · GCUBE vs 타사(RunPod H100/A100, Secure) · 측정 2026-06 v10(Triton) · 환율 1,500원/$ · <span style="color:var(--purple)">+/− 로 직접 조절</span></div>
       <div class="usc-tabs">
         <button class="on" onclick="showScn('conc',this)">동시 사용자</button>
         <button onclick="showScn('bulk',this)">대량 생성</button>
@@ -230,7 +230,7 @@
               <div class="usc-stat usc-good"><div class="usc-k">동시 처리</div><div class="usc-v" id="conc-slot">5<small>명</small></div></div>
               <div class="usc-stat usc-good"><div class="usc-k">전체 완료</div><div class="usc-v">~3.1<small>초</small></div></div>
               <div class="usc-stat usc-good"><div class="usc-k">평균 대기</div><div class="usc-v">~0<small>초</small></div></div>
-              <div class="usc-stat usc-good"><div class="usc-k">이미지당 비용</div><div class="usc-v">1.75<small>원</small></div></div></div></div>
+              <div class="usc-stat usc-good"><div class="usc-k">이미지당 비용</div><div class="usc-v">1.84<small>원</small></div></div></div></div>
           <div class="usc-cfg usc-them"><span class="usc-badge usc-them">타사 (H100)</span><h3>H100 × 1</h3><div class="usc-desc">단일 GPU로 순차 처리</div>
             <div class="usc-lanes" id="conc-them"></div>
             <div class="usc-axis" id="conc-them-axis">순차 처리 · 마지막 사용자 약 10.4초</div>
@@ -238,11 +238,11 @@
               <div class="usc-stat usc-bad"><div class="usc-k">동시 처리</div><div class="usc-v">1<small>명</small></div></div>
               <div class="usc-stat usc-bad"><div class="usc-k">전체 완료</div><div class="usc-v" id="conc-done">~10.4<small>초</small></div></div>
               <div class="usc-stat usc-bad"><div class="usc-k">평균 대기</div><div class="usc-v" id="conc-wait">최대 8.3<small>초</small></div></div>
-              <div class="usc-stat usc-bad"><div class="usc-k">이미지당 비용</div><div class="usc-v">2.90<small>원</small></div></div></div></div>
+              <div class="usc-stat usc-bad"><div class="usc-k">이미지당 비용</div><div class="usc-v">2.29<small>원</small></div></div></div></div>
         </div>
-        <div class="usc-verdict"><div class="usc-big">동시 처리 — GCUBE 약 40% 더 경제적</div>
-          <div class="usc-txt">GCUBE는 사용자별 전용 GPU로 <b id="conc-txt-done">전원 ~3초 내 동시 처리</b>(대기 없음), 이미지당 비용도 <b>1.75원</b>으로 타사 H100(2.90원) 대비 우수합니다. 동시 접속이 많을수록 대기·비용 격차가 커집니다.</div>
-          <div class="usc-honest">※ 단일 이미지 응답 속도는 H100이 더 빠름(2.07초 vs 3.09초). 동시·다수에서 GCUBE 우위.</div></div>
+        <div class="usc-verdict"><div class="usc-big">동시 처리 — GCUBE 약 20% 더 경제적</div>
+          <div class="usc-txt">GCUBE는 사용자별 전용 GPU로 <b id="conc-txt-done">전원 ~3초 내 동시 처리</b>(대기 없음), 이미지당 비용도 <b>1.84원</b>으로 타사 H100(2.29원) 대비 저렴합니다. 동시 접속이 많을수록 대기·비용 격차가 커집니다.</div>
+          <div class="usc-honest">※ 단일 이미지 응답 속도는 H100이 더 빠름(1.67초 vs 2.97초). 동시·다수에서 GCUBE 우위. (batch1 동일조건·환율1,500)</div></div>
       </div>
 
       <!-- ===== 대량 생성 ===== -->
@@ -257,8 +257,8 @@
           <div style="font-size:10.5px;color:var(--text-dim);margin-top:4px">막대: 완료 시간(짧을수록 우수) · 우측: 총비용 · 이미지당 비용</div>
         </div>
         <div class="usc-verdict"><div class="usc-big" id="bulk-big">10,000장 — 5090 ×5: 약 1.6시간 / 16,300원 (타사 H100 ×1: 3.85시간 / 19,400원)</div>
-          <div class="usc-txt">더 빠르면서 약 <b>16% 저렴</b>합니다. 총비용은 GPU 대수와 무관하게 거의 동일하며(이미지당 비용 × 장수), <b>GPU 대수로 완료 시간을 조절</b>할 수 있습니다.</div>
-          <div class="usc-honest">※ 최대 처리량 기준 · 5090 이미지당 1.63원은 클린 측정(320장) 기반 · A100·혼합은 추가 측정 예정.</div></div>
+          <div class="usc-txt">더 빠르면서 약 <b>20% 저렴</b>합니다. 총비용은 GPU 대수와 무관하게 거의 동일하며(이미지당 비용 × 장수), <b>GPU 대수로 완료 시간을 조절</b>할 수 있습니다.</div>
+          <div class="usc-honest">※ batch1 동일조건 · 5090 1.84원/장(클린 320장 실측) · batch8이면 1.63원 · 환율 1,500.</div></div>
       </div>
 
       <!-- ===== 구성 유연성 ===== -->
@@ -267,9 +267,9 @@
         <div class="usc-cols">
           <div class="usc-cfg usc-us"><span class="usc-badge usc-us">GCUBE — 직접 구성</span><h3>GPU 조합 선택</h3>
             <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:13px">
-              <div style="display:flex;align-items:center;gap:10px"><div style="flex:1"><div style="font-size:13px;color:#fff">RTX 5090</div><div style="font-size:10px;color:var(--text-dim)">1,239장/h · 2,040원/h · 1.63원/장</div></div>
+              <div style="display:flex;align-items:center;gap:10px"><div style="flex:1"><div style="font-size:13px;color:#fff">RTX 5090</div><div style="font-size:10px;color:var(--text-dim)">1,210장/h · 2,224원/h · 1.84원/장</div></div>
                 <div class="usc-step"><button onclick="flexStep('5090',-1)">−</button><span class="usc-v" id="c-5090">2</span><button onclick="flexStep('5090',1)">+</button></div></div>
-              <div style="display:flex;align-items:center;gap:10px"><div style="flex:1"><div style="font-size:13px;color:#fff">A100 40GB</div><div style="font-size:10px;color:var(--text-dim)">1,157장/h · 4,273원/h · 3.69원/장 (측정 추정)</div></div>
+              <div style="display:flex;align-items:center;gap:10px"><div style="flex:1"><div style="font-size:13px;color:#fff">A100 40GB</div><div style="font-size:10px;color:var(--text-dim)">930장/h · 4,273원/h · 4.59원/장 (gcube 40GB·대형작업용)</div></div>
                 <div class="usc-step"><button onclick="flexStep('A100',-1)">−</button><span class="usc-v" id="c-A100">0</span><button onclick="flexStep('A100',1)">+</button></div></div>
               <div style="display:flex;align-items:center;gap:10px;opacity:.4"><div style="flex:1"><div style="font-size:13px;color:#fff">RTX 5060Ti 16GB</div><div style="font-size:10px;color:var(--text-dim)">측정 예정</div></div>
                 <div class="usc-step"><button>−</button><span class="usc-v">0</span><button>+</button></div></div>
@@ -285,11 +285,11 @@
             <div class="usc-menu" style="margin-top:6px">고가 H100만 · 1대 단위로만 증설 · 다른 GPU 선택 불가</div>
             <div class="usc-stats">
               <div class="usc-stat"><div class="usc-k">구성</div><div class="usc-v">H100 ×1</div></div>
-              <div class="usc-stat"><div class="usc-k">처리량</div><div class="usc-v">2,595<small>장/h</small></div></div>
+              <div class="usc-stat"><div class="usc-k">처리량</div><div class="usc-v">2,158<small>장/h</small></div></div>
               <div class="usc-stat usc-bad"><div class="usc-k">목표 완료</div><div class="usc-v" id="h-time">3.85<small>시간</small></div></div>
               <div class="usc-stat usc-bad"><div class="usc-k">목표 총비용</div><div class="usc-v" id="h-total">19,400<small>원</small></div></div>
-              <div class="usc-stat usc-bad"><div class="usc-k">이미지당</div><div class="usc-v">1.94<small>원</small></div></div>
-              <div class="usc-stat"><div class="usc-k">시간당</div><div class="usc-v">5,033<small>원/h</small></div></div></div></div>
+              <div class="usc-stat usc-bad"><div class="usc-k">이미지당</div><div class="usc-v">2.29<small>원</small></div></div>
+              <div class="usc-stat"><div class="usc-k">시간당</div><div class="usc-v">4,950<small>원/h</small></div></div></div></div>
         </div>
 
         <!-- 왜 구성 유연성이 이득인가 -->
@@ -306,7 +306,7 @@
 
         <div class="usc-verdict"><div class="usc-big" id="f-big">선택한 GCUBE 구성이 H100보다 이미지당 약 15% 저렴</div>
           <div class="usc-txt">대수를 늘릴수록 <b>완료 시간이 짧아지고</b>, 목표 장수를 채우는 <b>총비용은 늘 H100보다 저렴</b>합니다(이미지당이 싸서). 시간당 금액은 대수만큼 커 보여도, 실제 '할 일(목표 장수)' 기준으론 GCUBE가 유리합니다.</div>
-          <div class="usc-honest">※ 5090 1.63원은 클린 측정 · A100는 측정 추정(넣으면 비용↑) · 5060Ti 측정 예정.</div></div>
+          <div class="usc-honest">※ 5090 1.84원·A100(gcube 40GB) 4.59원(batch1 실측) · H100 2.29원(타사) · 5060Ti 측정 예정 · 환율 1,500.</div></div>
       </div>
     </section>
   </div>

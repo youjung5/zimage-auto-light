@@ -1004,7 +1004,7 @@ function concCalc(){
   for(var j=1;j<=concN;j++) seq += '<i'+(j===1?' class="first"':'')+'>'+j+'</i>';
   seq += '</div></div>';
   document.getElementById('conc-them').innerHTML = seq;
-  var done=(concN*2.07).toFixed(1), wait=((concN-1)*2.07).toFixed(1);
+  var done=(concN*1.67).toFixed(1), wait=((concN-1)*1.67).toFixed(1);
   document.getElementById('conc-done').innerHTML = '~'+done+'<small>초</small>';
   document.getElementById('conc-wait').innerHTML = '최대 '+wait+'<small>초</small>';
   document.getElementById('conc-them-axis').textContent = '순차 처리 · 마지막 사용자 약 '+done+'초';
@@ -1017,21 +1017,21 @@ function fmt(n){ return Math.round(n).toLocaleString(); }
 function bulkCalc(){
   document.getElementById('bulk-n').textContent = bulkN.toLocaleString()+'장';
   document.getElementById('bulk-h3').textContent = '구성별 완료 시간 ('+bulkN.toLocaleString()+'장 기준)';
-  var tH=bulkN/2595, t3=bulkN/3750, t5=bulkN/6250;
-  var cH=bulkN*1.94, c3=bulkN*1.63, c5=bulkN*1.63;
+  var tH=bulkN/2158, t3=bulkN/3630, t5=bulkN/6050;
+  var cH=bulkN*2.29, c3=bulkN*1.84, c5=bulkN*1.84;
   document.getElementById('b-h-bar').style.width='100%';  document.getElementById('b-h-bar').textContent=tH.toFixed(2)+'시간';
   document.getElementById('b-3-bar').style.width=(t3/tH*100).toFixed(0)+'%'; document.getElementById('b-3-bar').textContent=t3.toFixed(2)+'시간';
   document.getElementById('b-5-bar').style.width=(t5/tH*100).toFixed(0)+'%'; document.getElementById('b-5-bar').textContent=t5.toFixed(2)+'시간';
-  document.getElementById('b-h-c').innerHTML=fmt(cH)+'원 · <small>1.94원/장</small>';
-  document.getElementById('b-3-c').innerHTML=fmt(c3)+'원 · <small>1.63원/장</small>';
-  document.getElementById('b-5-c').innerHTML=fmt(c5)+'원 · <small>1.63원/장</small>';
+  document.getElementById('b-h-c').innerHTML=fmt(cH)+'원 · <small>2.29원/장</small>';
+  document.getElementById('b-3-c').innerHTML=fmt(c3)+'원 · <small>1.84원/장</small>';
+  document.getElementById('b-5-c').innerHTML=fmt(c5)+'원 · <small>1.84원/장</small>';
   document.getElementById('bulk-big').textContent = bulkN.toLocaleString()+'장 — 5090 ×5: 약 '+t5.toFixed(1)+'시간 / '+fmt(c5)+'원 (타사 H100 ×1: '+tH.toFixed(2)+'시간 / '+fmt(cH)+'원)';
 }
 // --- 구성 유연성 (목표 장수 기준 완료시간·총비용 비교) ---
-var FX = {'5090':{tp:1239, price:2040}, 'A100':{tp:1157, price:4273}};
+var FX = {'5090':{tp:1210, price:2224}, 'A100':{tp:930, price:4273}};
 var FXc = {'5090':2, 'A100':0};
 var flexN = 10000;
-var H100_TP = 2595, H100_CPP = 1.94;
+var H100_TP = 2158, H100_CPP = 2.29;
 function fxTime(h){ return h>=1 ? h.toFixed(2)+'<small>시간</small>' : Math.round(h*60)+'<small>분</small>'; }
 function fxTimeStr(h){ return h>=1 ? h.toFixed(2)+'시간' : Math.round(h*60)+'분'; }
 function flexNStep(d){ flexN = Math.max(1000, flexN+d); flexCalc(); }
