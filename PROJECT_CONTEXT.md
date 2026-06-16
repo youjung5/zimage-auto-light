@@ -5,9 +5,19 @@
 
 ---
 
-## 0. 현재 상태 & 다음 할 일 (2026-06-11 세션 — 새 대화는 여기부터)
+## 0. 현재 상태 & 다음 할 일 (2026-06-15 세션 — 새 대화는 여기부터)
 
-**🎯 이번 세션 최대 발견 2가지:**
+**이번 세션(06-15) 한 일:**
+- **대시보드 레플리카 상세 = 팝업 → 좌우 2단으로 전환.** `index.html` `vDash`를 `.dash-2col`(좌 `#cards` 목록 / 우 `.rd-panel` 상세)로 재구성, 팝업 `#rdModal` 제거. 우측은 미선택 시 `#rdPh` 플레이스홀더, 선택 시 `#rdBody`(기존 상세 섹션 그대로) 표시. `app.js` 4곳 수정(`openReplicaModal`/`refreshReplicaModal`/`closeRd`/`viewReplica` — 가드는 `vDash` 표시여부로). `style.css`에 `.dash-2col`/`.dash-left`/`.dash-right`/`.rd-panel`/`.rd-ph` 추가. `node --check` 통과.
+- **"동일 스펙 타 서비스 단가" 섹션** — 사용자 지시로 **옛 하드코딩 값 그대로 유지**(gcube ₩910 최저 −42%, Novita/RunPod/Vast). ⚠️ 이 값은 v10 실측(동일칩 타사가 더 쌈)과 **모순**되지만, 사용자가 "그대로 넣어" 명시 → 보존. (정직성 이슈로 나중에 재검토 가능.)
+- **🆕 자매 프로젝트 `gcube-console` 생성** — `C:\Users\gcube\Desktop\gcube-console`. 영업/발표용 React 쇼케이스(랜딩 4타일 → z-image: 배포데모/비교/활용시나리오). **배포 데모 = 인앱 CLI 시뮬레이션**(실배포 아님, 실측 수치로 계산). 활용 시나리오는 **여기서 완전 이식**. 상세 = `gcube-console/PROJECT_CONTEXT.md`. ⚠️ "진짜 gcube 배포 연동(B안)" 여부 미결.
+- ⚠️ **대시보드 변경은 UI** → 반영하려면 **v12 빌드** 필요(아래 다음 할 일).
+- **✅ 아키텍처 결정(06-15 확정) — 역할 2분리:** `gcube-console`=영업(랜딩·CLI데모·**비교·활용시나리오**), `zimage-auto-light`(이 앱)=운영(**생성·대시보드·이미지·사용법**). 마케팅은 console(React)에서 도커 재빌드 없이 수정. 핸드오프 = console이 이 앱 운영 페이지를 iframe으로 띄움.
+- **✅ 비교·활용 시나리오 탭 제거 완료(06-15):** `index.html`에서 비교 탭 버튼·`vCompare` 뷰(활용시나리오 서브탭 포함)·cmp-overlay/toast·사용법 목차 '비교 탭'+`docsec-compare` 제거. `app.js` `show()`에서 vCompare/tCmp/cmpInit 참조 제거(`node --check` OK). **대시보드 '동일 스펙 타 서비스 단가'(.cmp) 섹션은 vDash 안이라 유지.** ⚠️ 남은 dead code: `app.js`의 `cmp*`/`showScn`/`concCalc` 등(호출 경로 없음·무해)·미사용 `.cmp-*`/`.usc-` CSS → 원하면 정리.
+
+---
+
+**🎯 이전 세션(06-11~13) 최대 발견 2가지:**
 - ✅ **5060 8GB에서 1024 된다!** (OOM 없이 생성·저장 확인 — 진짜 서비스, MEM_MODE=VRAM, 타일링 ON.) **기존 "8GB 1024 부적합" 결론 폐기.** diag로 원인 규명: 디노이징 루프(transformer)=**6.55GB로 8GB에 여유 있게 들어옴**, 넘치던 8.46GB는 **1회성 VAE 디코드** → 타일링이 잡아줌. (옛 "384초/부적합"은 타일링 끈 benchmark값이었음.)
 - 🔑 **Triton이 줄곧 깨져 있었다(eager 폴백).** 로그 "Failed to find C compiler" — 이미지에 C 컴파일러가 없어 SDNQ uint4 최적커널 미사용. **5060·5090·A100 모든 속도 측정이 eager = 전부 과소평가됐을 수 있음.** → Dockerfile에 `build-essential`+`python3-dev` 추가(v8). **빌드 후 옛 속도값 전부 재측정 대상.**
 - 5060 1024·8step 실측(eager) = **~24초/장**(step당 ~3초, OOM 없음). gcc 살린 v8에서 재측정 필요.
@@ -30,7 +40,7 @@
 | 카드 | 장당 | 장/h | util | 시간당 가격 | 원/장 | 상태 |
 |---|---|---|---|---|---|---|
 | H100 80GB (타사 RunPod) | 1.668s | 2,158 | 96% | $3.30(Secure)→4,950원/hr | **2.29원** | ✅ A100도 Secure($1.49)=같은티어 일관 |
-| H100 80GB (gcube) | 1.68s | 2,142 | 96% | 6,440~9,200원/hr(TIER1, util96%≈9,080) | **~4.2원** | ⚠️RunPod H100(2.29)보다 ~1.9배 비쌈 — gcube 기본금(6,440/hr). 같은칩인데 타사가 쌈 |
+| H100 80GB (gcube) | 1.68s | 2,142 | 96% | 12,600원/hr(기본금, 이용금별도) | **~5.9원+** | ⚠️RunPod H100(2.29)·Vast(1.74)보다 2.5~3.4배 비쌈 — gcube 기본금 12,600. 같은칩인데 타사가 훨씬 쌈 |
 | **RTX 5090 (gcube)** | **2.97s** | **1,210** | 99% | **2,224원/hr**(실측 320장) | **1.84원**(실측·batch1) | ✅확정 (batch8 sweet spot=1.63) |
 | A100-40GB (gcube) | 3.87s | 930 | 98% | ~4,273원/hr | ~4.6원 | 대형·고메모리 작업용(홍보=작업맞춤 선택지) |
 | A100-80GB (타사 RunPod) | 3.516s | 1,024 | 98.7% | $1.49≈2,235원/hr | **2.18원** | ⚠️gcube A100-40GB(4.6원)의 절반! gcube 기본금 탓. (변형도 40↔80GB 다름) |
@@ -44,7 +54,7 @@
 
 **다음 할 일:**
 1. **git 커밋·push** — 이번 세션 변경 다수(측정기록 md·PROJECT_CONTEXT·index.html·app.js·benchmark.py·diag·Dockerfile). `git add -A && git commit -m "..." && git push`.
-2. **v11 빌드·재배포** — 탭 교체가 UI라 새 이미지 빌드해야 반영(`docker build -t yjoh/z-image-light:v11 .` → push → 배포).
+2. **v12 빌드·재배포** — **대시보드 2단 전환(06-15)** 이 UI라 새 이미지 빌드해야 반영(`docker build -t yjoh/z-image-light:v12 .` → push → 배포). (v11은 활용시나리오 탭까지 반영분.)
 3. **5060 8GB 가격** (오프피크 비혼잡 클린 측정) → 탭 5060 슬롯 채움.
 4. (선택) 4090 재측정(throttle 확정) / gcube H100 정밀청구.
 

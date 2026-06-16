@@ -211,6 +211,16 @@ input[type=number]{-moz-appearance:textfield;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .loading-box{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:11px;padding:46px 20px;color:var(--text-dim);font-size:12.5px;grid-column:1/-1;width:100%;}
 .cards{flex:1;min-height:0;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;align-content:start;padding:4px 6px 4px 2px;margin-top:8px;}
+/* 대시보드 2단: 좌 레플리카 목록 / 우 상세 (팝업 → 인라인) */
+.dash-2col{display:grid;grid-template-columns:minmax(0,0.92fr) minmax(0,1.15fr);gap:16px;flex:1;min-height:0;}
+.dash-left{display:flex;flex-direction:column;min-height:0;}
+.dash-left .toolbar{flex-wrap:wrap;margin-bottom:10px;}
+.dash-left .cards{grid-template-columns:1fr;margin-top:0;}
+.dash-right{display:flex;flex-direction:column;min-height:0;}
+.rd-panel{flex:1;min-height:0;overflow-y:auto;background:linear-gradient(135deg,#15101f,#1a1230);border:1px solid var(--line);border-radius:16px;padding:22px 24px;}
+.rd-ph{height:100%;min-height:320px;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--text-dim);font-size:13px;line-height:1.8;}
+.rd-ph[hidden]{display:none;}
+@media(max-width:900px){.dash-2col{grid-template-columns:1fr;}.rd-panel{max-height:72vh;}}
 .rcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;cursor:pointer;transition:.15s;}
 .rcard:hover{border-color:var(--purple);transform:translateY(-2px);}
 .rcard.over{border-color:rgba(255,107,107,.4);}
@@ -480,7 +490,9 @@ input[type=number]{-moz-appearance:textfield;}
 .crow .tag.neutral{color:var(--text-2);font-weight:600;}
 .cmp .note{grid-column:1/-1;color:var(--text-dim);font-size:10.5px;border-top:1px solid var(--line);padding-top:12px;margin-top:2px;line-height:1.5;}
 @media(max-width:620px){.cmp{grid-template-columns:1fr;}.cmp .chart{border-left:none;padding-left:0;border-top:1px solid var(--line);padding-top:18px;}}
-/* ═══════════ 비교 탭 ═══════════ */
+
+/* ===== 비교·활용 시나리오 CSS — gcube-console로 이관, 운영 페이지 미사용 → 주석 처리(2026-06-15). 복구하려면 이 블록주석 해제. =====
+   ─── 비교 탭 스타일 ───
 .cmp-wrap{max-width:1320px;margin:0 auto;width:100%;padding:0 4px;}
 .cmp-subtabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:18px;}
 .cmp-subtabs button{font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:.04em;padding:10px 16px;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-muted);cursor:pointer;margin-bottom:-1px;}
@@ -594,7 +606,7 @@ input[type=number]{-moz-appearance:textfield;}
 .cmp-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(20,14,36,.96);border:1px solid var(--purple);color:#fff;padding:11px 18px;border-radius:9px;font-size:13px;opacity:0;transition:.25s;z-index:160;max-width:560px;text-align:center;}
 .cmp-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-/* ===== 활용 시나리오 (usecase) — 비교 탭 서브탭. usc- 접두사로 기존 클래스와 격리 ===== */
+   ─── 활용 시나리오(usc) 스타일 ───
 .usc-cap{font-size:11px;color:var(--text-dim);margin-bottom:14px;}
 .usc-tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:18px;}
 .usc-tabs button{font-family:'Orbitron',sans-serif;font-size:12px;padding:10px 16px;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-muted);cursor:pointer;margin-bottom:-1px;}
@@ -630,3 +642,4 @@ input[type=number]{-moz-appearance:textfield;}
 .usc-tbar.usc-them{background:rgba(255,255,255,.16);}.usc-tbar.usc-us{background:linear-gradient(90deg,#8B73FF,#6A4FE8);}
 .usc-brow .usc-num{font-family:'Orbitron',sans-serif;font-size:12px;color:#fff;text-align:right;}.usc-brow .usc-num small{color:var(--text-muted);font-size:10px;}
 .usc-menu{font-size:10px;color:var(--text-dim);margin-bottom:12px;}.usc-menu b{color:var(--purple);}
+/* ===== 비교·활용 시나리오 CSS 끝 (위 블록주석) ===== */

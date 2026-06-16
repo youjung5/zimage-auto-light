@@ -21,16 +21,13 @@ function show(v){TAB=v;
   document.getElementById('vGen').hidden=v!=='gen';
   document.getElementById('vDash').hidden=v!=='dash';
   document.getElementById('vImg').hidden=v!=='img';
-  document.getElementById('vCompare').hidden=v!=='compare';
   document.getElementById('vDocs').hidden=v!=='docs';
   document.getElementById('tGen').classList.toggle('on',v==='gen');
   document.getElementById('tDash').classList.toggle('on',v==='dash');
   document.getElementById('tImg').classList.toggle('on',v==='img');
-  document.getElementById('tCmp').classList.toggle('on',v==='compare');
   document.getElementById('tDocs').classList.toggle('on',v==='docs');
   if(v==='dash')reloadReplicas();
   if(v==='img')loadImgTab();
-  if(v==='compare')cmpInit();
   if(v==='docs'){if(!document.querySelector('#docsBody .d-sec.on'))showDoc('intro');}}
 // 사용법: 왼쪽 목차(리모콘) 클릭 → 해당 섹션으로 스크롤 / 스크롤 시 현재 섹션 목차 강조
 function showDoc(id,btn){
@@ -480,7 +477,7 @@ function openImgObj(m){if(!m)return;curImg=m;
 function closeImg(){document.getElementById('imgModal').classList.remove('on');}
 function copyText(t){navigator.clipboard?.writeText(t);}
 function downloadImg(){if(!curImg)return;const a=document.createElement('a');a.href='/api/images/'+encodeURIComponent(curImg.id)+'/file';a.download=curImg.id+'.png';a.click();}
-function viewReplica(id){closeImg();openReplicaModal(id);}
+function viewReplica(id){closeImg();show('dash');openReplicaModal(id);}
 
 // ───────── 이미지 탭 ─────────
 async function loadImgTab(){
@@ -654,6 +651,9 @@ function renderCards(){
       <div class="rbar2"><i style="width:${r.job_total?(r.job_completed/r.job_total*100):0}%"></i></div>`;
     },
     r=>openReplicaModal(r.replica));
+  // 레플리카가 1개뿐이면 자동 선택해 상세 표시
+  const _all=repsList();
+  if(_all.length===1 && !rdReplica) openReplicaModal(_all[0].replica);
 }
 
 // ───────── limit 적용 (생성탭) ─────────
@@ -747,20 +747,20 @@ async function openReplicaModal(id){
   if(!r){try{const d=await j('/api/replicas_all');r=(d.replicas||[]).find(x=>x.replica===id);}catch(e){}}
   if(!r)return;
   paintReplica(r);
-  document.getElementById('rdModal').classList.add('on');
+  document.getElementById('rdPh').hidden=true;document.getElementById('rdBody').hidden=false;
   loadHistory();loadMini();
   if(rdTimer)clearInterval(rdTimer);
   rdTimer=setInterval(refreshReplicaModal,3000);   // 열려있는 동안 자동 갱신
 }
 async function refreshReplicaModal(){
-  if(!rdReplica||!document.getElementById('rdModal').classList.contains('on')){clearInterval(rdTimer);rdTimer=null;return;}
+  if(!rdReplica||document.getElementById('vDash').hidden){clearInterval(rdTimer);rdTimer=null;return;}
   // 카드·요약과 동일한 출처(poll/reloadReplicas가 갱신하는 repStore)에서 읽어 값이 어긋나지 않게 한다
   const r=repsList().find(x=>x.replica===rdReplica);
   if(r)paintReplica(r);
   if(rdRange==='live')loadHistory();   // 실시간 범위면 시계열도 갱신
 }
 function limitDashVal(){return +document.getElementById('limitDash').value||null;}
-function closeRd(){document.getElementById('rdModal').classList.remove('on');if(rdTimer){clearInterval(rdTimer);rdTimer=null;}}
+function closeRd(){rdReplica=null;var b=document.getElementById('rdBody');if(b)b.hidden=true;var p=document.getElementById('rdPh');if(p)p.hidden=false;if(rdTimer){clearInterval(rdTimer);rdTimer=null;}}
 function setRange(r,btn){rdRange=r;[...document.getElementById('tsToolbar').children].forEach(b=>b.classList.remove('on'));btn.classList.add('on');loadHistory();}
 async function loadHistory(){
   try{const d=await j('/api/replica/'+encodeURIComponent(rdReplica)+'/history?range='+rdRange);
@@ -815,6 +815,7 @@ async function init(){
 }
 init();
 
+/* ===== 비교·활용 시나리오 JS — gcube-console(영업 셸)로 이관. 운영 페이지 미사용이라 주석 처리(2026-06-15). 복구하려면 이 블록주석 해제. =====
 // ═══════════════════════════════════════════════════════════════════
 // 비교 탭 (GPU 성능·비용 비교)
 //  · 가격/정책: /api/gpu_profiles 에서 실제로 읽음 (gpu_profiles.json)
@@ -822,18 +823,23 @@ init();
 // ═══════════════════════════════════════════════════════════════════
 const CMP_MAX=4, CMP_MIN=2, CMP_DT=10000;
 // ── 가데이터: 통계함(측정 성능). 키 = provider|model|mem_mode ──
+// v10 실측 (batch1·1024×1024·8step·VRAM·Triton ON, 2026-06). spm=장당(초), vram=VRAM peak(GB).
+// 같은 칩은 공급사 무관 동일 속도(gcube H100=RunPod H100로 검증) → spm은 공급사 공통.
+// ⚠️ 4090은 gcube 측정값(throttle 의심)이라 잠정. 5060은 Tier3 공유라 변동(비혼잡 기준). 가격은 gpu_profiles.json.
 const CMP_STATS = {
-  "GCUBE|RTX 5090|VRAM": {vram:19.0,err:0.4,dtype:'uint4',runs:[
-    {d:'06-08 14:30',n:1200,spm:2.0,w:1024,h:1024,steps:8,gd:1.0},
-    {d:'06-07 09:10',n:2400,spm:1.9,w:1024,h:1024,steps:8,gd:1.0},
-    {d:'06-05 22:05',n:800,spm:2.2,w:768,h:768,steps:8,gd:1.0},
-    {d:'06-04 10:15',n:600,spm:3.0,w:1024,h:1024,steps:12,gd:1.5}]},
-  "GCUBE|RTX 5060|RAM": {vram:7.4,err:1.8,dtype:'uint4',runs:[
-    {d:'06-08 11:00',n:1600,spm:6.1,w:1024,h:1024,steps:8,gd:1.0},
-    {d:'06-06 15:40',n:1500,spm:5.9,w:1024,h:1024,steps:8,gd:1.0}]},
-  "RunPod|RTX 5090|VRAM": {vram:19.0,err:0.6,dtype:'uint4',cond:{w:1024,h:1024,steps:8,gd:1.0,spm:2.0,n:1200}},
-  "Replicate|A100 40GB|VRAM": {vram:24.0,err:0.3,dtype:'uint4',cond:{w:512,h:512,steps:4,gd:1.0,spm:1.6,n:900}},
-  "fal.ai|RTX 5090|VRAM": {vram:19.0,err:0.5,dtype:'uint4',cond:{w:1024,h:1024,steps:8,gd:1.0,spm:2.1,n:1100}}
+  "GCUBE|RTX 5060|VRAM":   {vram:8.46,err:3.0,dtype:'uint4',cond:{w:1024,h:1024,steps:8,gd:0.0,spm:24.0,n:40}},
+  "GCUBE|RTX 5090|VRAM":   {vram:8.46,err:0.1,dtype:'uint4',cond:{w:1024,h:1024,steps:8,gd:0.0,spm:2.97,n:320}},
+  "GCUBE|RTX 4090|VRAM":   {vram:8.46,err:0.5,dtype:'uint4',cond:{w:1024,h:1024,steps:8,gd:0.0,spm:4.56,n:40}},
+  "GCUBE|A100 40GB|VRAM":  {vram:8.46,err:0.3,dtype:'uint4',cond:{w:1024,h:1024,steps:8,gd:0.0,spm:3.87,n:40}},
+  "GCUBE|H100 80GB|VRAM":  {vram:8.48,err:0.3,dtype:'uint4',cond:{w:1024,h:1024,steps:8,gd:0.0,spm:1.68,n:40}},
+  "RunPod|RTX 4090|VRAM":  {vram:8.46,err:0.5,dtype:'uint4',cond:{w:1024,h:1024,steps:8,gd:0.0,spm:4.56,n:40}},
+  "RunPod|RTX 5090|VRAM":  {vram:8.46,err:0.1,dtype:'uint4',cond:{w:1024,h:1024,steps:8,gd:0.0,spm:2.97,n:40}},
+  "RunPod|A100 80GB|VRAM": {vram:8.46,err:0.3,dtype:'uint4',cond:{w:1024,h:1024,steps:8,gd:0.0,spm:3.52,n:40}},
+  "RunPod|H100 80GB|VRAM": {vram:8.48,err:0.3,dtype:'uint4',cond:{w:1024,h:1024,steps:8,gd:0.0,spm:1.67,n:40}},
+  "Vast.ai|RTX 4090|VRAM": {vram:8.46,err:0.5,dtype:'uint4',cond:{w:1024,h:1024,steps:8,gd:0.0,spm:4.56,n:40}},
+  "Vast.ai|RTX 5090|VRAM": {vram:8.46,err:0.1,dtype:'uint4',cond:{w:1024,h:1024,steps:8,gd:0.0,spm:2.97,n:40}},
+  "Vast.ai|A100 80GB|VRAM":{vram:8.46,err:0.3,dtype:'uint4',cond:{w:1024,h:1024,steps:8,gd:0.0,spm:3.52,n:40}},
+  "Vast.ai|H100 80GB|VRAM":{vram:8.48,err:0.3,dtype:'uint4',cond:{w:1024,h:1024,steps:8,gd:0.0,spm:1.67,n:40}}
 };
 let CMP_PROFILES=null, CMP_SRC={}, CMP_GPUS=[], CMP_loaded=false;
 const CMP_sel=new Set(); let CMP_compareMode=false, CMP_cache=null;
@@ -1140,4 +1146,6 @@ function cmpExport(fmt){const sel=CMP_cache.ids.map(id=>CMP_GPUS.find(g=>g.id===
   cmpToast(fmt.toUpperCase()+' 저장 완료.');}
 function cmpDownload(n,c){const b=new Blob([c],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;a.click();}
 let CMP_toT;function cmpToast(m){const e=document.getElementById('cmpToast');if(!e)return;e.textContent=m;e.classList.add('show');clearTimeout(CMP_toT);CMP_toT=setTimeout(()=>e.classList.remove('show'),3400);}
+// ===== 비교·활용 시나리오 JS 끝 (위 블록주석) =====
+*/
 document.addEventListener('click',()=>{const m=document.getElementById('cmpSaveMenu');if(m)m.classList.remove('show');});
