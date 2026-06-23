@@ -760,6 +760,39 @@ def broadcast(
     return {"ok": True, "ts": ts, "count": int(count), "scope": "all"}
 
 
+@app.post("/api/generate_plan")
+def generate_plan(
+    plan: dict = Body(...),                       
+    conditions_file: str = Body(None),
+    random_pick: bool = Body(False),
+    prompt: str = Body(None),
+):
+    """레플리카별로 '다른 개수' 생성. plan의 각 파드 control 파일에 generate 기록.
+    (성능 가중 분배용 — 빠른 GPU 파드에 더 많이 배정해서 콘솔이 호출)"""
+    if not isinstance(plan, dict) or not plan:
+        raise HTTPException(400, "plan(파드별 개수)이 필요합니다.")
+    ts = dt.datetime.now().isoformat()
+    written = {}
+    for pod, cnt in plan.items():
+        try:
+            n = int(cnt)
+        except Exception:
+            continue
+        if n < 1:
+            continue
+        cmd = {"action": "generate", "ts": ts, "count": n,
+               "random_pick": bool(random_pick), "config_file": conditions_file}
+        if not conditions_file:
+            cmd["conditions"] = [{"prompt": prompt or "", "width": DEFAULT_WIDTH,
+                                  "height": DEFAULT_HEIGHT, "steps": DEFAULT_STEPS,
+                                  "guidance": DEFAULT_GUIDANCE, "seed": None}]
+        try:
+            (CONTROL_DIR / f"{pod}.json").write_text(
+                json.dumps(cmd, ensure_ascii=False), encoding="utf-8")
+            written[pod] = n
+        except Exception as e:
+            print(f"[ WARN ] generate_plan 기록 실패({pod}): {e}", flush=True)
+    return {"ok": True, "ts": ts, "written": written, "total": sum(written.values())}
 
 
 @app.get("/api/conditions")

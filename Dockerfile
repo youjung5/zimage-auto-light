@@ -68,6 +68,7 @@ ENV HF_HUB_OFFLINE=1 \
 COPY server.py /app/server.py
 COPY benchmark.py /app/benchmark.py
 COPY diag_vram.py /app/diag_vram.py
+COPY conditions.json /app/conditions.json
 COPY index.html /app/index.html
 COPY static/ /app/static/
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh

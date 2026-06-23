@@ -13,4 +13,12 @@ else
 fi
 
 cd /app
+
+# 기본 conditions.json을 작업 폴더(WORK_DIR)에 깔아둠 — 자동 생성 시 다양한 조건 사용
+WORK_DIR="${WORK_DIR:-/workspace}"
+mkdir -p "$WORK_DIR"
+if [ ! -f "$WORK_DIR/conditions.json" ] && [ -f /app/conditions.json ]; then
+    cp /app/conditions.json "$WORK_DIR/conditions.json" && echo "[ INFO  ] conditions.json → $WORK_DIR"
+fi
+
 exec python3 -m uvicorn server:app --host 0.0.0.0 --port "${PORT:-8000}"

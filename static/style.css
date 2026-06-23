@@ -23,7 +23,7 @@ body::before{content:'';position:fixed;top:-140px;right:-120px;width:560px;heigh
 *{scrollbar-width:thin;scrollbar-color:rgba(180,122,255,.25) transparent;}
 svg.ico{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none;}
 
-header{display:flex;align-items:center;gap:14px;padding:15px 28px;flex:none;z-index:2;}
+header{display:flex;align-items:center;gap:14px;padding:15px 18px;flex:none;z-index:2;}
 header .cube{height:34px;width:31px;display:inline-block;flex:none;
   background:linear-gradient(165deg,#E4D2FF 0%,#C9A8FF 30%,#B47AFF 55%,#9255DE 78%,#7B45C9 100%);
   -webkit-mask:url(/static/logo.png) center/contain no-repeat;
@@ -39,7 +39,7 @@ header .badge{font-size:11px;background:rgba(127,79,217,.25);color:#cbb0ff;borde
 
 .view{flex:1;min-height:0;z-index:2;}
 .view[hidden]{display:none;}
-.gen-wrap,.dash-wrap{height:100%;display:flex;flex-direction:column;max-width:1320px;margin:0 auto;padding:0 28px 22px;width:100%;}
+.gen-wrap,.dash-wrap{height:100%;display:flex;flex-direction:column;max-width:1700px;margin:0 auto;padding:0 18px 22px;width:100%;}
 .grid{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:20px;}
 .col{display:flex;flex-direction:column;gap:14px;min-height:0;}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 17px;}
