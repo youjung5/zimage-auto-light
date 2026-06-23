@@ -416,6 +416,7 @@ def _status_payload():
         "uptime_s": uptime_s,
         "job_started": job.job_started.isoformat(timespec="seconds") if job.job_started else None,
         "job_finished": job.job_finished.isoformat(timespec="seconds") if job.job_finished else None,
+        "job_elapsed_s": int(((job.job_finished or now) - job.job_started).total_seconds()) if job.job_started else None,
         "busy_ratio": busy_ratio,
         "gen_seconds_total": round(TOTAL_GEN_SECONDS, 1),   # 누적 생성시간(가동률 분자)
         "throughput_hr": throughput_hr,
