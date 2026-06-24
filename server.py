@@ -486,9 +486,8 @@ def _apply_command(d):
         try:
             conds = _load_conditions_file(cf) if cf else d.get("conditions")
             if conds:
-                # UI 일괄 생성 = manual. 진행 중(running/paused)이면 job.start가 409 → 아래서 건너뜀.
                 job.start(conds, int(d.get("count", 1)), bool(d.get("random_pick", False)),
-                          config_file=cf, source="manual")
+                          config_file=cf, source="auto")
         except HTTPException as e:
             print(f"[ CTRL ] generate 건너뜀(진행 중이거나 입력 오류): {e.detail}", flush=True)
         except Exception as e:
