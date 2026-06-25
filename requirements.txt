@@ -11,3 +11,5 @@ huggingface_hub>=0.34.0
 # 리소스 모니터링 (RAM: psutil / GPU 사용률: nvidia-ml-py, 둘 다 순수 파이썬)
 psutil>=5.9.0
 nvidia-ml-py>=12.0.0
+# 성능 지표를 Prometheus pushgateway로 전송
+prometheus-client>=0.20.0

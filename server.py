@@ -93,6 +93,10 @@ GEN_COUNT = os.getenv("GEN_COUNT", "").strip()
 CONDITIONS_FILE = os.getenv("CONDITIONS_FILE", "").strip()
 RANDOM_PICK = os.getenv("RANDOM_PICK", "false").strip().lower() in ("1", "true", "yes", "y")
 
+# Prometheus pushgateway — 성능 지표 전송 (URL 없으면 전송 안 함)
+PUSHGATEWAY_URL = os.getenv("PUSHGATEWAY_URL", "").strip()
+NODE_NAME = os.getenv("NODE_NAME", "").strip()        # k8s downward API로 주입(없으면 빈값)
+
 STALE_SECONDS = float(os.getenv("STALE_SECONDS", "120"))  # 이 시간 넘게 갱신 없으면 '응답 지연'(노랑, 살아있음). 잠깐 밀린 것 — 죽음 아님
 DEAD_SECONDS = float(os.getenv("DEAD_SECONDS", "300"))    # 이 시간 넘게 갱신 없으면 '죽음'(빨강). 지연을 한참 지나야 죽음으로 판정 → 죽음↔살음 깜빡임 방지
 LOAD_STALE_SECONDS = float(os.getenv("LOAD_STALE_SECONDS", "600"))  # 'loading'(모델 로드 중) 전용 죽음 임계. 노하드에선 모델 로드 자체가 네트워크라 오래 걸림
@@ -179,6 +183,7 @@ TOTAL_GEN_SECONDS = 0.0  # 누적 생성 시간(초) — 가동률 계산용
 LAST_GEN = {"seconds": None, "peak_vram_mb": None}
 GEN_TIMES = deque(maxlen=STAT_KEEP)   # 생성 소요시간(초) 표본
 VRAM_PEAKS = deque(maxlen=STAT_KEEP)  # 생성 VRAM peak(GB) 표본
+JOB_UTILS = deque(maxlen=STAT_KEEP)   # 현재 작업 중 GPU util 표본 (perf util 평균용)
 
 
 def _stat(seq):
@@ -214,6 +219,47 @@ def _gpu_snapshot():
         out["ram_total_gb"] = round(vm.total / 1024**3, 1)
         out["ram_percent"] = vm.percent
     return out
+
+
+# GPU 이름 (Prometheus 라벨용) — 시작 시 1회 감지
+def _detect_gpu_name():
+    if not _NVML:
+        return ""
+    try:
+        name = pynvml.nvmlDeviceGetName(pynvml.nvmlDeviceGetHandleByIndex(0))
+        return name.decode() if isinstance(name, bytes) else str(name)
+    except Exception:
+        return ""
+GPU_NAME = _detect_gpu_name()
+
+
+# 성능 지표 6종을 Prometheus pushgateway로 전송 (PUSHGATEWAY_URL 있을 때만)
+def push_perf(ipm, avg_sec, busy_ratio, gpu_util, vram_used_gb, ram_used_gb):
+    if not PUSHGATEWAY_URL:
+        return
+    try:
+        from prometheus_client import Gauge, CollectorRegistry, push_to_gateway
+        reg = CollectorRegistry()
+        def g(name, desc, val):
+            Gauge(name, desc, registry=reg).set(float(val or 0))
+        g("zimage_images_per_minute", "분당 생성 이미지 수(IPM)", ipm)
+        g("zimage_avg_gen_seconds",   "장당 평균 생성 시간(초)",   avg_sec)
+        g("zimage_gpu_busy_ratio",    "GPU 효율(가동률 %)",        busy_ratio)
+        g("zimage_gpu_util",          "생성 중 최대 GPU 사용률(%)", gpu_util)
+        g("zimage_vram_used_gb",      "VRAM 사용량(GB)",           vram_used_gb)
+        g("zimage_mem_used_gb",       "MEM 사용량(GB)",            ram_used_gb)
+        push_to_gateway(
+            PUSHGATEWAY_URL, job="zimage_gpu_perf", registry=reg,
+            grouping_key={
+                "node": NODE_NAME or "unknown",
+                "gpu": GPU_NAME or "unknown",
+                "pod": REPLICA_ID,
+                "model": "zimage",
+            },
+        )
+        print(f"[perf] pushed IPM={ipm:.1f} avg={avg_sec:.2f}s util={gpu_util}", flush=True)
+    except Exception as e:
+        print(f"[perf] push 실패: {e}", flush=True)
 
 
 def _next_seq():
@@ -333,6 +379,7 @@ class JobManager:
         self.state = "running"; self.total = int(count); self.completed = 0
         self.message = ""; self.config_file = config_file
         self.job_started = dt.datetime.now(); self.job_finished = None
+        JOB_UTILS.clear()   # 이번 작업 util 표본 초기화 (perf 평균용)
         self._cancel.clear(); self._resume.set()
         self._thread = threading.Thread(target=self._worker,
                                         args=(conditions, int(count), bool(random_pick), config_file, source),
@@ -362,6 +409,26 @@ class JobManager:
                 self.completed += 1
                 _write_heartbeat()   # 매 장 직후 하트비트 강제 갱신 — 무거운 추론으로 주기 스레드가 밀려도 '죽음' 오판 방지
             self.state = "done"; self.message = f"{self.completed}장 완료"; self.job_finished = dt.datetime.now()
+            # 작업 완료 → 성능 지표 6종: 항상 로그로 출력 + (PUSHGATEWAY_URL 있으면) Prometheus로도 전송
+            try:
+                _elapsed = (self.job_finished - self.job_started).total_seconds()
+                _ipm = (self.completed * 60 / _elapsed) if _elapsed > 0 else 0
+                _avg = (_elapsed / self.completed) if self.completed else 0
+                _snap = _gpu_snapshot()
+                _uptime = max(1, (dt.datetime.now() - STARTED_AT).total_seconds())
+                _busy = round(min(100.0, TOTAL_GEN_SECONDS / _uptime * 100), 1)
+                # util: 끝 시점 순간값(idle)이 아니라 "생성 중 최대" / VRAM: 생성 peak
+                _util = max(JOB_UTILS) if JOB_UTILS else _snap["util"]
+                _vram = max(VRAM_PEAKS) if VRAM_PEAKS else _snap["vram_used_gb"]
+                _mem = _snap["ram_used_gb"]
+                # 터미널/로그로 항상 출력 (pushgateway 없이도 결과 확인 가능)
+                print("[perf] ===== 측정 결과 =====", flush=True)
+                print(f"[perf] GPU={GPU_NAME or '?'} | 생성 {self.completed}장 / {_elapsed:.1f}초", flush=True)
+                print(f"[perf] 분당={_ipm:.1f}장  시간당={_ipm*60:.0f}장  장당평균={_avg:.2f}초", flush=True)
+                print(f"[perf] GPU최대={_util}%  가동률={_busy}%  VRAM={_vram}GB  MEM={_mem}GB", flush=True)
+                push_perf(_ipm, _avg, _busy, _util, _vram, _mem)
+            except Exception as _e:
+                print(f"[perf] 지표 계산/전송 실패: {_e}", flush=True)
         except Exception as e:
             self.state = "error"; self.message = str(e); self.job_finished = dt.datetime.now()
 
@@ -540,6 +607,9 @@ def _history_sample():
     now = dt.datetime.now()
     point = {"t": now.isoformat(timespec="seconds"),
              "vram": snap["vram_used_gb"], "util": snap["util"], "ram": snap["ram_used_gb"]}
+    # 작업(생성) 중이면 util 표본 누적 — perf 전송 시 끝 시점 idle값 대신 "생성 중 평균"을 쓰기 위함
+    if snap["util"] is not None and getattr(job, "state", "") == "running":
+        JOB_UTILS.append(snap["util"])
     _recent.append(point)
     # recent 파일은 작으니 매번 덮어쓰기
     try:
