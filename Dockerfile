@@ -18,15 +18,14 @@ ENV DEBIAN_FRONTEND=noninteractive \
     MODEL_REPO=${MODEL_REPO} \
     OUTPUT_DIR=/workspace/outputs \
     PORT=8000 \
-    ZIMG_WIDTH=1024 \
-    ZIMG_HEIGHT=1024 \
+    ZIMG_WIDTH=768 \
+    ZIMG_HEIGHT=576 \
     ZIMG_STEPS=8 \
     ZIMG_GUIDANCE=0.0
 
 # ── 시스템 패키지 (설치 + 정리 한 레이어) ──
 #   build-essential + python3-dev: Triton JIT가 커널 런처를 컴파일할 때 C 컴파일러(+Python.h)가 필요.
 #   없으면 SDNQ가 "Failed to find C compiler" → PyTorch eager 모드로 폴백(uint4 최적커널 미사용 → 느림).
-#   (2026-06-11: 5060/5090/A100 측정이 전부 eager였던 원인. 정확한 속도엔 이게 있어야 함.)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 python3-pip python3-dev git ca-certificates build-essential \
     && rm -rf /var/lib/apt/lists/*
@@ -38,7 +37,8 @@ WORKDIR /app
 #   (기존엔 CPU torch 설치 후 재설치 → 두 벌이 이미지에 박혀 6.5GB 낭비)
 #   torchaudio는 이미지 생성에 불필요 → 제외 (torch + torchvision 만)
 RUN python3 -m pip install --no-cache-dir --upgrade pip setuptools wheel && \
-    python3 -m pip install --no-cache-dir torch==2.11.0 torchvision==0.26.0 \
+    python3 -m pip install --no-cache-dir --retries 10 --timeout 300 \
+      torch==2.11.0 torchvision==0.26.0 \
       --index-url https://download.pytorch.org/whl/cu128 && \
     (python3 -m pip uninstall -y pytorch-triton triton nvidia-nccl-cu12 || true)
 # ↑ 미사용 패키지 제거 (같은 레이어여야 실제 용량 감소):

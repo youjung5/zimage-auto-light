@@ -1,1202 +1,1202 @@
 [
   {
     "prompt": "a vintage bookstore, dramatic golden hour, epic and dramatic",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a misty pine forest, ethereal backlight, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a lighthouse on a rocky cliff, soft morning light, serene atmosphere",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an old European cobblestone street, bright studio lighting, ultra detailed, 8k",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a fresh sushi platter, moody blue hour, macro close-up",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a sizzling steak on a cast iron pan, cinematic lighting, cozy and warm",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a frozen fjord, warm candlelight glow, shallow depth of field",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a rooftop garden over the city, muted earthy tones, dreamy and surreal",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a street musician at dusk, moody blue hour, minimalist composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a majestic eagle in flight, bright studio lighting, shallow depth of field",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a retro typewriter on a desk, crisp photorealistic detail, ultra detailed, 8k",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a lavender field stretching to the horizon, cinematic lighting, serene atmosphere",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a hot air balloon over valleys, vibrant saturated colors, symmetrical composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a horse galloping on a beach, vibrant saturated colors, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "coastal cliffs at sunset, soft morning light, serene atmosphere",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "dewdrops on a spiderweb at sunrise, dramatic golden hour, serene atmosphere",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "towering desert sand dunes, moody blue hour, minimalist composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a quiet Venetian canal, crisp photorealistic detail, soft bokeh background",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a latte with delicate latte art, warm candlelight glow, soft bokeh background",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a bustling Moroccan medina, cinematic lighting, cozy and warm",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a cozy coffee shop interior, neon-lit at night, ultra detailed, 8k",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "autumn leaves in extreme close-up, neon-lit at night, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a serene bamboo forest, moody blue hour, symmetrical composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a red fox in fresh snow, bright studio lighting, macro close-up",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a calm lake with morning fog, vibrant saturated colors, soft bokeh background",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a summer fruit tart, overcast soft light, minimalist composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "koi fish in a clear pond, cinematic lighting, minimalist composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a stack of pancakes with syrup, neon-lit at night, epic and dramatic",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an alpine meadow full of wildflowers, vibrant saturated colors, macro close-up",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a vintage red sports car, muted earthy tones, macro close-up",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an astronaut floating in space, soft morning light, wide angle view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a winding canyon river, ethereal backlight, wide angle view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a sailboat on a calm sea, vibrant saturated colors, serene atmosphere",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "terraced rice paddies, muted earthy tones, wide angle view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a butterfly resting on lavender, crisp photorealistic detail, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a tropical jungle waterfall, soft morning light, macro close-up",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a sunken underwater city, bright studio lighting, soft bokeh background",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a golden retriever puppy, dramatic golden hour, shallow depth of field",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a glittering crystal cave, muted earthy tones, macro close-up",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an alien desert planet with two moons, crisp photorealistic detail, wide angle view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a dragon soaring over mountains, vibrant saturated colors, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a space station orbiting Earth, warm candlelight glow, soft bokeh background",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a grand gothic cathedral interior, vibrant saturated colors, epic and dramatic",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a row of colorful macarons, muted earthy tones, shallow depth of field",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an owl perched on a branch, moody blue hour, serene atmosphere",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "the northern lights over snowy tundra, warm candlelight glow, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a blooming cherry blossom branch, warm candlelight glow, wide angle view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a snowy mountain lake, warm candlelight glow, soft bokeh background",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an abandoned overgrown factory, soft morning light, minimalist composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a vintage steam locomotive, bright studio lighting, minimalist composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a wizard's tower at twilight, overcast soft light, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a hummingbird sipping a flower, bright studio lighting, dreamy and surreal",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an enchanted glowing forest, soft morning light, serene atmosphere",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a volcanic landscape with lava, crisp photorealistic detail, soft bokeh background",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a child flying a kite in a park, neon-lit at night, ultra detailed, 8k",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an orange tabby cat, moody blue hour, dreamy and surreal",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a panda eating bamboo, cinematic lighting, cozy and warm",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a lone hiker on a mountain ridge, overcast soft light, wide angle view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a grand old library, warm candlelight glow, wide angle view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a field of sunflowers, muted earthy tones, epic and dramatic",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "rolling green hills at dawn, bright studio lighting, ultra detailed, 8k",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an antique pocket watch, crisp photorealistic detail, ultra detailed, 8k",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a minimalist Japanese tea room, crisp photorealistic detail, ultra detailed, 8k",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a school of tropical fish, muted earthy tones, cozy and warm",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a Scandinavian living room, moody blue hour, dreamy and surreal",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a tiny succulent garden, moody blue hour, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "floating islands in the sky, soft morning light, dreamy and surreal",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a steaming bowl of ramen, ethereal backlight, shallow depth of field",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a glowing retro arcade machine, crisp photorealistic detail, macro close-up",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a barista making coffee, vibrant saturated colors, dreamy and surreal",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a Tokyo street glowing at night, soft morning light, shallow depth of field",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a neon cyberpunk alley, crisp photorealistic detail, cozy and warm",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a traditional Korean hanok village, soft morning light, macro close-up",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a bustling night market, warm candlelight glow, ultra detailed, 8k",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an autumn maple forest, warm candlelight glow, symmetrical composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a vast salt flat reflection, dramatic golden hour, wide angle view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "rustic artisan bread loaves, bright studio lighting, soft bokeh background",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a futuristic city skyline, overcast soft light, macro close-up",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a classic chrome motorcycle, muted earthy tones, wide angle view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a sunlit artist's studio, warm candlelight glow, shallow depth of field",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a vintage bookstore, muted earthy tones, wide angle view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a misty pine forest, cinematic lighting, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a lighthouse on a rocky cliff, crisp photorealistic detail, dreamy and surreal",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an old European cobblestone street, neon-lit at night, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a fresh sushi platter, bright studio lighting, soft bokeh background",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a sizzling steak on a cast iron pan, vibrant saturated colors, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a frozen fjord, crisp photorealistic detail, minimalist composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a rooftop garden over the city, moody blue hour, epic and dramatic",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a street musician at dusk, ethereal backlight, ultra detailed, 8k",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a majestic eagle in flight, muted earthy tones, serene atmosphere",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a retro typewriter on a desk, cinematic lighting, ultra detailed, 8k",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a lavender field stretching to the horizon, crisp photorealistic detail, epic and dramatic",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a hot air balloon over valleys, dramatic golden hour, wide angle view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a horse galloping on a beach, neon-lit at night, wide angle view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "coastal cliffs at sunset, overcast soft light, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "dewdrops on a spiderweb at sunrise, dramatic golden hour, ultra detailed, 8k",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "towering desert sand dunes, crisp photorealistic detail, macro close-up",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a quiet Venetian canal, dramatic golden hour, symmetrical composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a latte with delicate latte art, crisp photorealistic detail, soft bokeh background",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a bustling Moroccan medina, bright studio lighting, cozy and warm",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a cozy coffee shop interior, bright studio lighting, ultra detailed, 8k",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "autumn leaves in extreme close-up, crisp photorealistic detail, cozy and warm",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a serene bamboo forest, overcast soft light, dreamy and surreal",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a red fox in fresh snow, vibrant saturated colors, shallow depth of field",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a calm lake with morning fog, overcast soft light, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a summer fruit tart, ethereal backlight, minimalist composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "koi fish in a clear pond, muted earthy tones, dreamy and surreal",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a stack of pancakes with syrup, muted earthy tones, epic and dramatic",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an alpine meadow full of wildflowers, warm candlelight glow, wide angle view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a vintage red sports car, bright studio lighting, macro close-up",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an astronaut floating in space, neon-lit at night, macro close-up",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a winding canyon river, overcast soft light, shallow depth of field",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a sailboat on a calm sea, cinematic lighting, shallow depth of field",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "terraced rice paddies, neon-lit at night, shallow depth of field",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a butterfly resting on lavender, muted earthy tones, minimalist composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a tropical jungle waterfall, moody blue hour, wide angle view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a sunken underwater city, warm candlelight glow, soft bokeh background",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a golden retriever puppy, neon-lit at night, symmetrical composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a glittering crystal cave, dramatic golden hour, epic and dramatic",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an alien desert planet with two moons, moody blue hour, dreamy and surreal",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a dragon soaring over mountains, soft morning light, ultra detailed, 8k",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a space station orbiting Earth, dramatic golden hour, symmetrical composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a grand gothic cathedral interior, warm candlelight glow, epic and dramatic",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a row of colorful macarons, moody blue hour, soft bokeh background",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an owl perched on a branch, neon-lit at night, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "the northern lights over snowy tundra, dramatic golden hour, wide angle view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a blooming cherry blossom branch, bright studio lighting, soft bokeh background",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a snowy mountain lake, dramatic golden hour, cozy and warm",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an abandoned overgrown factory, soft morning light, shallow depth of field",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a vintage steam locomotive, muted earthy tones, wide angle view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a wizard's tower at twilight, dramatic golden hour, dreamy and surreal",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a hummingbird sipping a flower, overcast soft light, soft bokeh background",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an enchanted glowing forest, crisp photorealistic detail, cozy and warm",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a volcanic landscape with lava, warm candlelight glow, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a child flying a kite in a park, moody blue hour, epic and dramatic",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an orange tabby cat, moody blue hour, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a panda eating bamboo, vibrant saturated colors, symmetrical composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a lone hiker on a mountain ridge, warm candlelight glow, symmetrical composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a grand old library, vibrant saturated colors, symmetrical composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a field of sunflowers, neon-lit at night, cozy and warm",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "rolling green hills at dawn, moody blue hour, cozy and warm",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an antique pocket watch, warm candlelight glow, cozy and warm",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a minimalist Japanese tea room, vibrant saturated colors, serene atmosphere",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a school of tropical fish, soft morning light, dreamy and surreal",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a Scandinavian living room, muted earthy tones, soft bokeh background",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a tiny succulent garden, warm candlelight glow, macro close-up",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "floating islands in the sky, warm candlelight glow, cozy and warm",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a steaming bowl of ramen, cinematic lighting, ultra detailed, 8k",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a glowing retro arcade machine, overcast soft light, symmetrical composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a barista making coffee, neon-lit at night, dreamy and surreal",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a Tokyo street glowing at night, soft morning light, ultra detailed, 8k",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a neon cyberpunk alley, bright studio lighting, dreamy and surreal",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a traditional Korean hanok village, overcast soft light, ultra detailed, 8k",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a bustling night market, warm candlelight glow, epic and dramatic",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an autumn maple forest, ethereal backlight, cozy and warm",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a vast salt flat reflection, crisp photorealistic detail, symmetrical composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "rustic artisan bread loaves, crisp photorealistic detail, ultra detailed, 8k",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a futuristic city skyline, dramatic golden hour, soft bokeh background",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a classic chrome motorcycle, warm candlelight glow, serene atmosphere",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a sunlit artist's studio, neon-lit at night, macro close-up",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a vintage bookstore, moody blue hour, epic and dramatic",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a misty pine forest, muted earthy tones, macro close-up",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a lighthouse on a rocky cliff, cinematic lighting, soft bokeh background",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an old European cobblestone street, muted earthy tones, ultra detailed, 8k",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a fresh sushi platter, crisp photorealistic detail, soft bokeh background",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a sizzling steak on a cast iron pan, neon-lit at night, macro close-up",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a frozen fjord, bright studio lighting, ultra detailed, 8k",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a rooftop garden over the city, ethereal backlight, epic and dramatic",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a street musician at dusk, soft morning light, wide angle view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a majestic eagle in flight, vibrant saturated colors, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a retro typewriter on a desk, overcast soft light, macro close-up",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a lavender field stretching to the horizon, muted earthy tones, symmetrical composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a hot air balloon over valleys, overcast soft light, serene atmosphere",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a horse galloping on a beach, crisp photorealistic detail, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "coastal cliffs at sunset, dramatic golden hour, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "dewdrops on a spiderweb at sunrise, neon-lit at night, symmetrical composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "towering desert sand dunes, muted earthy tones, macro close-up",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a quiet Venetian canal, muted earthy tones, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a latte with delicate latte art, muted earthy tones, epic and dramatic",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a bustling Moroccan medina, crisp photorealistic detail, dreamy and surreal",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a cozy coffee shop interior, moody blue hour, shallow depth of field",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "autumn leaves in extreme close-up, overcast soft light, serene atmosphere",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a serene bamboo forest, overcast soft light, epic and dramatic",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a red fox in fresh snow, crisp photorealistic detail, macro close-up",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a calm lake with morning fog, dramatic golden hour, wide angle view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a summer fruit tart, dramatic golden hour, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "koi fish in a clear pond, dramatic golden hour, macro close-up",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a stack of pancakes with syrup, crisp photorealistic detail, minimalist composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an alpine meadow full of wildflowers, dramatic golden hour, symmetrical composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a vintage red sports car, cinematic lighting, ultra detailed, 8k",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an astronaut floating in space, ethereal backlight, ultra detailed, 8k",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a winding canyon river, dramatic golden hour, epic and dramatic",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a sailboat on a calm sea, overcast soft light, minimalist composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "terraced rice paddies, warm candlelight glow, serene atmosphere",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a butterfly resting on lavender, muted earthy tones, shallow depth of field",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a tropical jungle waterfall, bright studio lighting, macro close-up",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a sunken underwater city, warm candlelight glow, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a golden retriever puppy, crisp photorealistic detail, minimalist composition",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "a glittering crystal cave, warm candlelight glow, shallow depth of field",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   },
   {
     "prompt": "an alien desert planet with two moons, warm candlelight glow, aerial top-down view",
-    "width": 1024,
-    "height": 1024,
+    "width": 768,
+    "height": 576,
     "steps": 8
   }
 ]
